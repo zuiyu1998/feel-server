@@ -10,3 +10,4 @@ sea-orm = { version = "0.12", features = [
     "sqlx-postgres",
     "runtime-tokio-native-tls",
 ] }
+serde = { version = "1.0" }
