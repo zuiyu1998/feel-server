@@ -8,6 +8,13 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Default, Deserialize, Serialize)]
 pub struct Config {
     pub server: ServerConfig,
+    pub system: SystemConfig,
+}
+
+#[derive(Debug, Default, Deserialize, Serialize)]
+pub struct SystemConfig {
+    pub name: String,
+    pub version: String,
 }
 
 #[derive(Debug, Default, Deserialize, Serialize)]
@@ -19,11 +26,15 @@ pub struct ServerConfig {
 
 impl ServerConfig {
     pub fn get_api_url(&self) -> String {
-        format!("http://localhost:{}/api", self.host)
+        format!("http://localhost:{}/api", self.port)
     }
 
     pub fn get_addr(&self) -> String {
         format!("{}:{}", self.host, self.port)
+    }
+
+    pub fn get_swigger_url(&self) -> String {
+        format!("http://localhost:{}/", self.port)
     }
 }
 

@@ -23,6 +23,7 @@ poem = { version = "1.3" }
 poem-openapi = { version = "3.0.6", features = ["swagger-ui"] }
 
 tracing-subscriber = { version = "0.3" }
+tracing = { version = "0.1", features = ["log"] }
 
 figment = { version = "0.10", features = ["toml", "env"] }
 dotenvy = { version = "0.15" }

@@ -19,8 +19,10 @@ pub async fn start_web() -> ServerResult<()> {
     let config = load_config()?;
     tracing_subscriber::fmt::init();
 
-    let api_service =
-        OpenApiService::new(Api, "Hello World", "1.0").server(config.server.get_api_url());
+    let api_service = OpenApiService::new(Api, config.system.name, config.system.version)
+        .server(config.server.get_api_url());
+
+    tracing::info!("swagger_ui url : {}", config.server.get_swigger_url());
 
     let ui = api_service.swagger_ui();
 
