@@ -4,22 +4,22 @@ use crate::{Config, ServerResult};
 use rc_entity::sea_orm::{Database, DatabaseConnection};
 
 #[derive(Clone)]
-pub struct Server {
+pub struct State {
     conn: DatabaseConnection,
     config: Arc<Config>,
 }
 
-impl Server {
+impl State {
     pub async fn from_config(config: &Arc<Config>) -> ServerResult<Self> {
         let conn = Database::connect(&config.server.database_url).await?;
 
-        Ok(Server {
+        Ok(State {
             conn,
             config: config.clone(),
         })
     }
 }
 
-async fn start_server(config: &Arc<Config>) -> ServerResult<Server> {
-    Server::from_config(&config).await
+pub async fn initialize(config: &Arc<Config>) -> ServerResult<State> {
+    State::from_config(&config).await
 }

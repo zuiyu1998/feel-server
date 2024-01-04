@@ -1,7 +1,7 @@
 mod config;
 mod error;
 
-mod server;
+mod state;
 
 pub use config::*;
 pub use error::*;

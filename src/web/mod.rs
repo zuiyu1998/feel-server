@@ -1,5 +1,11 @@
-use crate::{config::load_config, ServerResult};
-use poem::{listener::TcpListener, Route, Server};
+use std::sync::Arc;
+
+use crate::{
+    config::load_config,
+    state::{self},
+    Config, ServerResult,
+};
+use poem::{listener::TcpListener, middleware::Tracing, EndpointExt, Route, Server};
 use poem_openapi::{param::Query, payload::PlainText, OpenApi, OpenApiService};
 
 struct Api;
@@ -17,17 +23,28 @@ impl Api {
 
 pub async fn start_web() -> ServerResult<()> {
     let config = load_config()?;
+
+    let config: Arc<Config> = Arc::new(config);
+
     tracing_subscriber::fmt::init();
 
-    let api_service = OpenApiService::new(Api, config.system.name, config.system.version)
+    let state = state::initialize(&config).await?;
+
+    let api_service = OpenApiService::new(Api, &config.system.name, &config.system.version)
         .server(config.server.get_api_url());
 
     tracing::info!("swagger_ui url : {}", config.server.get_swigger_url());
 
     let ui = api_service.swagger_ui();
 
+    let app = Route::new()
+        .nest("/api", api_service)
+        .nest("/", ui)
+        .data(state)
+        .with(Tracing);
+
     Server::new(TcpListener::bind(config.server.get_addr()))
-        .run(Route::new().nest("/api", api_service).nest("/", ui))
+        .run(app)
         .await?;
 
     Ok(())
