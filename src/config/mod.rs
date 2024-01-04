@@ -1,13 +1,53 @@
-#[derive(Debug, Default)]
+use crate::ServerResult;
+use figment::{
+    providers::{Env, Format, Serialized, Toml},
+    Figment,
+};
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Default, Deserialize, Serialize)]
 pub struct Config {
     pub server: ServerConfig,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Deserialize, Serialize)]
 pub struct ServerConfig {
     pub database_url: String,
+    pub host: String,
+    pub port: u16,
 }
 
-pub fn load_config() -> Config {
-    todo!()
+impl ServerConfig {
+    pub fn get_api_url(&self) -> String {
+        format!("http://localhost:{}/api", self.host)
+    }
+
+    pub fn get_addr(&self) -> String {
+        format!("{}:{}", self.host, self.port)
+    }
+}
+
+pub fn load_config() -> ServerResult<Config> {
+    dotenvy::dotenv().ok();
+
+    let mut config: Config;
+
+    if cfg!(feature = "dev") {
+        config = Figment::new()
+            .merge(Serialized::defaults(Config::default()))
+            .select("dev")
+            .merge(Toml::file("Config.toml"))
+            .extract()?;
+
+        let server: ServerConfig = Figment::new().merge(Env::prefixed("")).extract()?;
+
+        config.server = server;
+    } else {
+        config = Figment::new()
+            .merge(Serialized::defaults(Config::default()))
+            .select("production")
+            .merge(Toml::file("Config.toml"))
+            .extract()?;
+    }
+    Ok(config)
 }

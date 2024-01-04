@@ -16,15 +16,15 @@ impl Api {
 }
 
 pub async fn start_web() -> ServerResult<()> {
-    // let config = load_config();
+    let config = load_config()?;
     tracing_subscriber::fmt::init();
 
     let api_service =
-        OpenApiService::new(Api, "Hello World", "1.0").server("http://localhost:3000/api");
+        OpenApiService::new(Api, "Hello World", "1.0").server(config.server.get_api_url());
 
     let ui = api_service.swagger_ui();
 
-    Server::new(TcpListener::bind("0.0.0.0:3000"))
+    Server::new(TcpListener::bind(config.server.get_addr()))
         .run(Route::new().nest("/api", api_service).nest("/", ui))
         .await?;
 
