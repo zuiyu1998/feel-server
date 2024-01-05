@@ -15,6 +15,7 @@ dev = []
 [dependencies]
 
 rc-entity = { path = "./crates/entity" }
+rc-storage = { path = "./crates/storage" }
 
 thiserror = { version = "1.0" }
 tokio = { version = "1.35", features = ["full"] }
@@ -30,3 +31,5 @@ dotenvy = { version = "0.15" }
 
 serde = { version = "1.0" }
 serde_json = { version = "1.0" }
+
+sha2 = { version = "0.10" }

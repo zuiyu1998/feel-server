@@ -5,8 +5,8 @@ use rc_entity::sea_orm::{Database, DatabaseConnection};
 
 #[derive(Clone)]
 pub struct State {
-    conn: DatabaseConnection,
-    config: Arc<Config>,
+    pub conn: DatabaseConnection,
+    pub config: Arc<Config>,
 }
 
 impl State {

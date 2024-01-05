@@ -9,6 +9,9 @@ port = 9000
 name = "feel-server"
 version = "0.0.0"
 
+[dev."encrypt"]
+secure = "feel"
+
 [production]
 
 [production."server"]
@@ -19,3 +22,6 @@ port = 9000
 [production."system"]
 name = "feel-server"
 version = "0.0.0"
+
+[production."encrypt"]
+secure = "feel"

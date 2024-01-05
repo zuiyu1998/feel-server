@@ -9,12 +9,18 @@ use serde::{Deserialize, Serialize};
 pub struct Config {
     pub server: ServerConfig,
     pub system: SystemConfig,
+    pub encrypt: EncryptConfig,
 }
 
 #[derive(Debug, Default, Deserialize, Serialize)]
 pub struct SystemConfig {
     pub name: String,
     pub version: String,
+}
+
+#[derive(Debug, Default, Deserialize, Serialize)]
+pub struct EncryptConfig {
+    pub secure: String,
 }
 
 #[derive(Debug, Default, Deserialize, Serialize)]
