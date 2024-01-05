@@ -6,32 +6,28 @@ use crate::{
     Config, ServerResult,
 };
 use poem::{listener::TcpListener, middleware::Tracing, EndpointExt, Route, Server};
-use poem_openapi::{param::Query, payload::PlainText, OpenApi, OpenApiService};
+use poem_openapi::OpenApiService;
+use tracing::Level;
 
-struct Api;
-
-#[OpenApi]
-impl Api {
-    #[oai(path = "/hello", method = "get")]
-    async fn index(&self, name: Query<Option<String>>) -> PlainText<String> {
-        match name.0 {
-            Some(name) => PlainText(format!("hello, {name}!")),
-            None => PlainText("hello!".to_string()),
-        }
-    }
-}
+mod apis;
 
 pub async fn start_web() -> ServerResult<()> {
     let config = load_config()?;
 
     let config: Arc<Config> = Arc::new(config);
 
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::fmt::fmt()
+        .with_max_level(Level::INFO)
+        .init();
 
     let state = state::initialize(&config).await?;
 
-    let api_service = OpenApiService::new(Api, &config.system.name, &config.system.version)
-        .server(config.server.get_api_url());
+    let api_service = OpenApiService::new(
+        apis::create_apis(),
+        &config.system.name,
+        &config.system.version,
+    )
+    .server(config.server.get_api_url());
 
     tracing::info!("swagger_ui url : {}", config.server.get_swigger_url());
 
@@ -40,8 +36,8 @@ pub async fn start_web() -> ServerResult<()> {
     let app = Route::new()
         .nest("/api", api_service)
         .nest("/", ui)
-        .data(state)
-        .with(Tracing);
+        .with(Tracing)
+        .data(state);
 
     Server::new(TcpListener::bind(config.server.get_addr()))
         .run(app)
