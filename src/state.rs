@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use crate::{Config, ServerResult};
+use migration::{Migrator, MigratorTrait};
 use rc_entity::sea_orm::{Database, DatabaseConnection};
 
 #[derive(Clone)]
@@ -12,6 +13,8 @@ pub struct State {
 impl State {
     pub async fn from_config(config: &Arc<Config>) -> ServerResult<Self> {
         let conn = Database::connect(&config.server.database_url).await?;
+
+        Migrator::up(&conn, None).await?;
 
         Ok(State {
             conn,

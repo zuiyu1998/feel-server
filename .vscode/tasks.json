@@ -7,6 +7,11 @@
       "label": "web dev",
       "type": "shell",
       "command": "cargo run --bin web"
+    },
+    {
+      "label": "migration up",
+      "type": "shell",
+      "command": "cd ./crates/migration | cargo run --up"
     }
   ]
 }

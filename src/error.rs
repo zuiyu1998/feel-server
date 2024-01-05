@@ -1,5 +1,6 @@
 use figment::Error as FigmentError;
 use rc_entity::sea_orm::DbErr;
+use rc_storage::StorageError;
 use std::io::Error as IoError;
 use thiserror::Error;
 
@@ -11,6 +12,8 @@ pub enum ServerError {
     IoError(#[from] IoError),
     #[error(transparent)]
     FigmentError(#[from] FigmentError),
+    #[error(transparent)]
+    StorageError(#[from] StorageError),
 }
 
 pub type ServerResult<T, E = ServerError> = std::result::Result<T, E>;
