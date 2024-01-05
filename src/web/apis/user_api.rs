@@ -7,6 +7,8 @@ use poem_openapi::{
 
 use rc_storage::prelude::{AuthClass, User, UserForm};
 
+use rc_storage::chrono::NaiveDateTime;
+
 use crate::{services::UserService, state::State};
 
 use super::response::{bad_request_handler, bad_response_handler, ResponseObject};
@@ -49,6 +51,29 @@ impl UserFormRequest {
     }
 }
 
+#[derive(Debug, Object)]
+pub struct UserResponse {
+    pub id: i32,
+    pub nikename: String,
+    pub uid: String,
+    pub avatar: String,
+    pub create_at: Any<NaiveDateTime>,
+    pub update_at: Any<NaiveDateTime>,
+}
+
+impl UserResponse {
+    fn from_user(user: User) -> UserResponse {
+        UserResponse {
+            id: user.id,
+            nikename: user.nikename,
+            uid: user.uid,
+            avatar: user.avatar,
+            create_at: Any(user.create_at),
+            update_at: Any(user.update_at),
+        }
+    }
+}
+
 #[derive(ApiResponse)]
 #[oai(bad_request_handler = "inline_bad_request_handler")]
 enum UserApiResponse<T: ParseFromJSON + ToJSON + Send + Sync> {
@@ -69,7 +94,7 @@ impl Api {
         &self,
         state: Data<&State>,
         form: Json<UserFormRequest>,
-    ) -> UserApiResponse<Any<User>> {
+    ) -> UserApiResponse<UserResponse> {
         let form = form.get_user_form();
         let service = UserService::new(&state);
         match service.create_user(form).await {
@@ -77,7 +102,9 @@ impl Api {
                 return UserApiResponse::Ok(Json(bad_response_handler(e)));
             }
             Ok(user) => {
-                return UserApiResponse::Ok(Json(ResponseObject::ok(Any(user))));
+                return UserApiResponse::Ok(Json(ResponseObject::ok(UserResponse::from_user(
+                    user,
+                ))));
             }
         }
     }

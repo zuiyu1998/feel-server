@@ -7,6 +7,19 @@ use serde::{Deserialize, Serialize};
 
 use crate::utils::get_now;
 
+#[derive(Debug, Default)]
+pub struct UserBaseOption {
+    pub nikename: Option<String>,
+    pub uid: Option<String>,
+}
+
+#[derive(Debug, Default)]
+pub struct UserAuthOption {
+    pub user_id: Option<i32>,
+    pub auth_class: Option<AuthClass>,
+    pub unique_name: Option<String>,
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct User {
     pub id: i32,
