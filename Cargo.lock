@@ -1678,6 +1678,7 @@ dependencies = [
  "async-std",
  "rc-entity",
  "sea-orm-migration",
+ "serde_json",
 ]
 
 [[package]]
@@ -2362,6 +2363,7 @@ dependencies = [
 name = "rc-entity"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "sea-orm",
  "serde",
 ]
@@ -2370,7 +2372,6 @@ dependencies = [
 name = "rc-storage"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "rc-entity",
  "serde",
  "serde_json",

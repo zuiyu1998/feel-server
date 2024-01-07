@@ -9,8 +9,6 @@ edition = "2021"
 rc-entity = { path = "../entity" }
 thiserror = { version = "1.0" }
 
-chrono = { version = "0.4" }
-
 serde = { version = "1.0" }
 serde_json = { version = "1.0" }
 

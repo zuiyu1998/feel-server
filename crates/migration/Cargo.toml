@@ -12,6 +12,7 @@ path = "src/lib.rs"
 async-std = { version = "1", features = ["attributes", "tokio1"] }
 
 rc-entity = { path = "../entity" }
+serde_json = { version = "1.0" }
 
 [dependencies.sea-orm-migration]
 version = "0.12.0"

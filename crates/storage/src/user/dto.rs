@@ -1,11 +1,9 @@
-use chrono::NaiveDateTime;
 use rc_entity::{
-    prelude::{UserAuthActiveModel, UserAuthClass, UserBaseActiveModel, UserBaseModel},
+    chrono::NaiveDateTime,
+    prelude::{get_now, UserAuthActiveModel, UserAuthClass, UserBaseActiveModel, UserBaseModel},
     sea_orm::Set,
 };
 use serde::{Deserialize, Serialize};
-
-use crate::utils::get_now;
 
 #[derive(Debug, Default)]
 pub struct UserBaseOption {
