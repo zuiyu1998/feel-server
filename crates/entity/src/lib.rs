@@ -5,5 +5,6 @@ mod user;
 
 pub mod prelude {
 
+    pub use crate::setting::*;
     pub use crate::user::*;
 }
