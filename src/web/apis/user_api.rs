@@ -32,7 +32,6 @@ impl From<AuthClassRequest> for AuthClass {
 
 #[derive(Debug, Deserialize, Object, Serialize)]
 pub struct UserFormRequest {
-    pub nikename: String,
     pub avatar: String,
     pub auth_class: AuthClassRequest,
     pub auth_name: String,
@@ -42,7 +41,6 @@ pub struct UserFormRequest {
 impl UserFormRequest {
     pub fn get_user_form(&self) -> UserForm {
         UserForm {
-            nikename: self.nikename.clone(),
             avatar: self.avatar.clone(),
             auth_class: AuthClass::from(self.auth_class),
             auth_name: self.auth_name.clone(),
