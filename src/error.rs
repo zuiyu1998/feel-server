@@ -5,6 +5,13 @@ use std::io::Error as IoError;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
+
+pub enum ServerKind {
+    #[error("SettingValueNotFound")]
+    SettingValueNotFound,
+}
+
+#[derive(Debug, Error)]
 pub enum ServerError {
     #[error(transparent)]
     DbErr(#[from] DbErr),
@@ -14,6 +21,8 @@ pub enum ServerError {
     FigmentError(#[from] FigmentError),
     #[error(transparent)]
     StorageError(#[from] StorageError),
+    #[error(transparent)]
+    Kind(#[from] ServerKind),
 }
 
 pub type ServerResult<T, E = ServerError> = std::result::Result<T, E>;

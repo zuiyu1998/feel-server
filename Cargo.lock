@@ -968,6 +968,7 @@ dependencies = [
  "migration",
  "poem",
  "poem-openapi",
+ "rand",
  "rc-entity",
  "rc-storage",
  "serde",
@@ -2372,6 +2373,7 @@ dependencies = [
  "chrono",
  "rc-entity",
  "serde",
+ "serde_json",
  "thiserror",
  "tracing",
 ]

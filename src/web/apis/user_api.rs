@@ -87,6 +87,19 @@ fn inline_bad_request_handler<T: ParseFromJSON + ToJSON + Send + Sync>(
 
 #[OpenApi(tag = "super::ApiTags::UserApi")]
 impl Api {
+    #[oai(path = "/user/get_range_avatar", method = "get")]
+    async fn get_range_avatar(&self, state: Data<&State>) -> UserApiResponse<String> {
+        let service = UserService::new(&state);
+        match service.get_range_avatar().await {
+            Err(e) => {
+                return UserApiResponse::Ok(Json(bad_response_handler(e)));
+            }
+            Ok(avatar) => {
+                return UserApiResponse::Ok(Json(ResponseObject::ok(avatar)));
+            }
+        }
+    }
+
     #[oai(path = "/user/create_user", method = "post")]
     async fn create_user(
         &self,

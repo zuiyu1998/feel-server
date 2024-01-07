@@ -30,6 +30,8 @@ tracing = { version = "0.1", features = ["log"] }
 figment = { version = "0.10", features = ["toml", "env"] }
 dotenvy = { version = "0.15" }
 
+rand = { version = "0.8" }
+
 serde = { version = "1.0" }
 serde_json = { version = "1.0" }
 
