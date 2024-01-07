@@ -54,7 +54,6 @@ impl From<UserBaseModel> for User {
 }
 
 pub struct UserForm {
-    pub nikename: String,
     pub avatar: String,
     pub auth_class: AuthClass,
     pub auth_name: String,
@@ -73,7 +72,6 @@ pub struct UserFormEncrypt {
 impl UserFormEncrypt {
     pub fn from_form(form: UserForm, encrypt_data: Vec<u8>, uid: &str) -> UserFormEncrypt {
         let UserForm {
-            nikename,
             avatar,
             auth_class,
             auth_name,
@@ -81,7 +79,7 @@ impl UserFormEncrypt {
         } = form;
 
         UserFormEncrypt {
-            nikename,
+            nikename: format!("uid-{}", uid),
             uid: uid.to_owned(),
             avatar,
             auth_class,

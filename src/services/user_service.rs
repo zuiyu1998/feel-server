@@ -15,11 +15,11 @@ impl<'a> UserService<'a> {
     pub async fn create_user(&self, form: UserForm) -> ServerResult<User> {
         let encryptor = Encryptor::new(self.state.config.encrypt.secure.as_bytes());
 
-        let uid = "ddd";
+        let uid = xid::new().to_string();
 
         let encrypt_data = encryptor.encode(&form.auth_data);
 
-        let form = UserFormEncrypt::from_form(form, encrypt_data, uid);
+        let form = UserFormEncrypt::from_form(form, encrypt_data, &uid);
 
         let beign = self.state.conn.begin().await?;
 
