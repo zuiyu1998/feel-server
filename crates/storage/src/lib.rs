@@ -11,4 +11,6 @@ pub use chrono;
 pub mod prelude {
 
     pub use crate::user::*;
+
+    pub use crate::setting::*;
 }

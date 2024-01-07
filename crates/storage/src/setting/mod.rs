@@ -12,6 +12,10 @@ pub struct SettingStorage<'a, C> {
 }
 
 impl<'a, C: ConnectionTrait> SettingStorage<'a, C> {
+    pub fn new(conn: &'a C) -> Self {
+        SettingStorage { conn }
+    }
+
     pub async fn all(&self) -> StorageResult<Vec<SettingValue>> {
         let sql = SettingEntity::find()
             .filter(SettingColumn::IsEnable.eq(true))

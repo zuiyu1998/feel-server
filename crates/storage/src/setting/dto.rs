@@ -15,9 +15,9 @@ impl From<SettingEntityDataType> for SettingDataType {
 
 #[derive(Debug, Clone)]
 pub struct SettingValue {
-    key: String,
-    raw_data: String,
-    data_type: SettingDataType,
+    pub key: String,
+    pub raw_data: String,
+    pub data_type: SettingDataType,
 }
 
 impl From<SettingModel> for SettingValue {
@@ -26,8 +26,6 @@ impl From<SettingModel> for SettingValue {
             key,
             raw_data,
             setting_data_type,
-            create_at,
-            update_at,
             ..
         } = value;
 
