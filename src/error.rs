@@ -1,3 +1,4 @@
+use crate::web::middleware::MiddlewareKind;
 use figment::Error as FigmentError;
 use rc_entity::sea_orm::DbErr;
 use rc_storage::StorageError;
@@ -27,6 +28,8 @@ pub enum ServerError {
     Kind(#[from] ServerKind),
     #[error(transparent)]
     JwtKind(#[from] JwtKind),
+    #[error(transparent)]
+    MiddlewareKind(#[from] MiddlewareKind),
 }
 
 pub type ServerResult<T, E = ServerError> = std::result::Result<T, E>;
