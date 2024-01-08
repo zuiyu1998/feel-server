@@ -1,9 +1,5 @@
-use poem::{web::Data, Error};
-use poem_openapi::{
-    payload::Json,
-    types::{Any, ParseFromJSON, ToJSON},
-    ApiResponse, Enum, Object, OpenApi,
-};
+use poem::web::Data;
+use poem_openapi::{payload::Json, types::Any, Enum, Object, OpenApi};
 
 use rc_storage::prelude::{AuthClass, User, UserForm, UserLoginForm};
 
@@ -11,7 +7,7 @@ use rc_storage::chrono::NaiveDateTime;
 
 use crate::{services::UserService, state::State, web::security::UserId};
 
-use crate::web::response::{bad_request_handler, bad_response_handler, ResponseObject};
+use crate::web::response::{bad_response_handler, GenericApiResponse, ResponseObject};
 
 use serde::{Deserialize, Serialize};
 
@@ -89,19 +85,6 @@ impl UserResponse {
     }
 }
 
-#[derive(ApiResponse)]
-#[oai(bad_request_handler = "inline_bad_request_handler")]
-enum UserApiResponse<T: ParseFromJSON + ToJSON + Send + Sync> {
-    #[oai(status = 200)]
-    Ok(Json<ResponseObject<T>>),
-}
-
-fn inline_bad_request_handler<T: ParseFromJSON + ToJSON + Send + Sync>(
-    err: Error,
-) -> UserApiResponse<T> {
-    UserApiResponse::Ok(Json(bad_request_handler(err)))
-}
-
 #[OpenApi(tag = "super::ApiTags::UserApi")]
 impl UserApi {
     #[oai(path = "/user/get_user_info", method = "post")]
@@ -109,14 +92,14 @@ impl UserApi {
         &self,
         state: Data<&State>,
         user_id: UserId,
-    ) -> UserApiResponse<UserResponse> {
+    ) -> GenericApiResponse<UserResponse> {
         let service = UserService::new(&state);
         match service.get_user_info(user_id.0).await {
             Err(e) => {
-                return UserApiResponse::Ok(Json(bad_response_handler(e)));
+                return GenericApiResponse::Ok(Json(bad_response_handler(e)));
             }
             Ok(user) => {
-                return UserApiResponse::Ok(Json(ResponseObject::ok(UserResponse::from_user(
+                return GenericApiResponse::Ok(Json(ResponseObject::ok(UserResponse::from_user(
                     user,
                 ))));
             }
@@ -128,29 +111,29 @@ impl UserApi {
         &self,
         form: Json<UserLoginFormRequest>,
         state: Data<&State>,
-    ) -> UserApiResponse<String> {
+    ) -> GenericApiResponse<String> {
         let form = form.get_user_form();
 
         let service = UserService::new(&state);
         match service.login(form).await {
             Err(e) => {
-                return UserApiResponse::Ok(Json(bad_response_handler(e)));
+                return GenericApiResponse::Ok(Json(bad_response_handler(e)));
             }
             Ok(token) => {
-                return UserApiResponse::Ok(Json(ResponseObject::ok(token)));
+                return GenericApiResponse::Ok(Json(ResponseObject::ok(token)));
             }
         }
     }
 
     #[oai(path = "/user/get_range_avatar", method = "get")]
-    async fn get_range_avatar(&self, state: Data<&State>) -> UserApiResponse<String> {
+    async fn get_range_avatar(&self, state: Data<&State>) -> GenericApiResponse<String> {
         let service = UserService::new(&state);
         match service.get_range_avatar().await {
             Err(e) => {
-                return UserApiResponse::Ok(Json(bad_response_handler(e)));
+                return GenericApiResponse::Ok(Json(bad_response_handler(e)));
             }
             Ok(avatar) => {
-                return UserApiResponse::Ok(Json(ResponseObject::ok(avatar)));
+                return GenericApiResponse::Ok(Json(ResponseObject::ok(avatar)));
             }
         }
     }
@@ -160,15 +143,15 @@ impl UserApi {
         &self,
         state: Data<&State>,
         form: Json<UserFormRequest>,
-    ) -> UserApiResponse<UserResponse> {
+    ) -> GenericApiResponse<UserResponse> {
         let form = form.get_user_form();
         let service = UserService::new(&state);
         match service.create_user(form).await {
             Err(e) => {
-                return UserApiResponse::Ok(Json(bad_response_handler(e)));
+                return GenericApiResponse::Ok(Json(bad_response_handler(e)));
             }
             Ok(user) => {
-                return UserApiResponse::Ok(Json(ResponseObject::ok(UserResponse::from_user(
+                return GenericApiResponse::Ok(Json(ResponseObject::ok(UserResponse::from_user(
                     user,
                 ))));
             }
