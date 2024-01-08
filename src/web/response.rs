@@ -1,14 +1,29 @@
 use poem::Error;
 use poem_openapi::{
     error::ParseRequestPayloadError,
+    payload::Json,
     types::{ParseFromJSON, ToJSON},
-    Object,
+    ApiResponse, Object,
 };
+
 const OK_CODE: i32 = 10000;
 const INVALID_REQUEST_CODE: i32 = 400;
 const UNKNOWN_CODE: i32 = 415;
 
 use crate::ServerError;
+
+#[derive(ApiResponse)]
+#[oai(bad_request_handler = "inline_bad_request_handler")]
+pub enum GenericApiResponse<T: ParseFromJSON + ToJSON + Send + Sync> {
+    #[oai(status = 200)]
+    Ok(Json<ResponseObject<T>>),
+}
+
+fn inline_bad_request_handler<T: ParseFromJSON + ToJSON + Send + Sync>(
+    err: Error,
+) -> GenericApiResponse<T> {
+    GenericApiResponse::Ok(Json(bad_request_handler(err)))
+}
 
 #[derive(Object)]
 pub struct ResponseObject<T: ParseFromJSON + ToJSON + Send + Sync> {
