@@ -10,6 +10,7 @@ use poem_openapi::OpenApiService;
 use tracing::Level;
 
 mod apis;
+mod response;
 
 pub async fn start_web() -> ServerResult<()> {
     let config = load_config()?;

@@ -11,7 +11,7 @@ use rc_storage::chrono::NaiveDateTime;
 
 use crate::{services::UserService, state::State};
 
-use super::response::{bad_request_handler, bad_response_handler, ResponseObject};
+use crate::web::response::{bad_request_handler, bad_response_handler, ResponseObject};
 
 use serde::{Deserialize, Serialize};
 
