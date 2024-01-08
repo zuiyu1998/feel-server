@@ -56,8 +56,8 @@ pub struct LabelApi;
 
 #[OpenApi(tag = "super::ApiTags::LabelApi")]
 impl LabelApi {
-    #[oai(path = "/user/get_user_info", method = "post")]
-    async fn get_user_info(
+    #[oai(path = "/label/create_label", method = "post")]
+    async fn create_label(
         &self,
         state: Data<&State>,
         form: Json<LableFormRequest>,
