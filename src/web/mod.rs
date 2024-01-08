@@ -12,7 +12,7 @@ use tracing::Level;
 mod apis;
 mod response;
 
-pub mod middleware;
+pub mod security;
 
 pub async fn start_web() -> ServerResult<()> {
     let config = load_config()?;

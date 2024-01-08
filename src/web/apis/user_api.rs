@@ -9,7 +9,7 @@ use rc_storage::prelude::{AuthClass, User, UserForm, UserLoginForm};
 
 use rc_storage::chrono::NaiveDateTime;
 
-use crate::{services::UserService, state::State};
+use crate::{services::UserService, state::State, web::security::UserId};
 
 use crate::web::response::{bad_request_handler, bad_response_handler, ResponseObject};
 
@@ -104,6 +104,11 @@ fn inline_bad_request_handler<T: ParseFromJSON + ToJSON + Send + Sync>(
 
 #[OpenApi(tag = "super::ApiTags::UserApi")]
 impl UserApi {
+    #[oai(path = "/user/get_user_info", method = "post")]
+    async fn get_user_info(&self, state: Data<&State>, user_id: UserId) -> UserApiResponse<String> {
+        return UserApiResponse::Ok(Json(ResponseObject::ok("ok".to_string())));
+    }
+
     #[oai(path = "/user/login", method = "post")]
     async fn login(
         &self,
