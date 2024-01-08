@@ -18,7 +18,6 @@ impl Encryptor {
 
         hasher.update(raw.as_bytes());
 
-        // read hash digest and consume hasher
         let result = hasher.finalize();
 
         result.to_vec()

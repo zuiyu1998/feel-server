@@ -10,6 +10,13 @@ pub struct Config {
     pub server: ServerConfig,
     pub system: SystemConfig,
     pub encrypt: EncryptConfig,
+    pub jwt: JwtConfig,
+}
+
+#[derive(Debug, Default, Deserialize, Serialize)]
+pub struct JwtConfig {
+    pub issuer: String,
+    pub secret: String,
 }
 
 #[derive(Debug, Default, Deserialize, Serialize)]

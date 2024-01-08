@@ -2,7 +2,7 @@ use rc_entity::sea_orm::DatabaseConnection;
 use rc_storage::prelude::{SettingStorage, SettingValue};
 use std::collections::HashMap;
 
-use crate::{state::State, ServerResult};
+use crate::ServerResult;
 
 pub struct ProjectSetting(pub HashMap<String, SettingValue>);
 
@@ -17,8 +17,4 @@ impl ProjectSetting {
 
         Ok(ProjectSetting(map))
     }
-}
-
-pub struct SettingService<'a> {
-    state: &'a State,
 }

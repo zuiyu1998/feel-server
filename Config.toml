@@ -12,6 +12,10 @@ version = "0.0.0"
 [dev."encrypt"]
 secure = "feel"
 
+[dev."jwt"]
+secure = "feel"
+issuer = "feel.com"
+
 [production]
 
 [production."server"]
@@ -25,3 +29,7 @@ version = "0.0.0"
 
 [production."encrypt"]
 secure = "feel"
+
+[production."jwt"]
+secure = "feel"
+issuer = "feel.com"
