@@ -105,8 +105,22 @@ fn inline_bad_request_handler<T: ParseFromJSON + ToJSON + Send + Sync>(
 #[OpenApi(tag = "super::ApiTags::UserApi")]
 impl UserApi {
     #[oai(path = "/user/get_user_info", method = "post")]
-    async fn get_user_info(&self, state: Data<&State>, user_id: UserId) -> UserApiResponse<String> {
-        return UserApiResponse::Ok(Json(ResponseObject::ok("ok".to_string())));
+    async fn get_user_info(
+        &self,
+        state: Data<&State>,
+        user_id: UserId,
+    ) -> UserApiResponse<UserResponse> {
+        let service = UserService::new(&state);
+        match service.get_user_info(user_id.0).await {
+            Err(e) => {
+                return UserApiResponse::Ok(Json(bad_response_handler(e)));
+            }
+            Ok(user) => {
+                return UserApiResponse::Ok(Json(ResponseObject::ok(UserResponse::from_user(
+                    user,
+                ))));
+            }
+        }
     }
 
     #[oai(path = "/user/login", method = "post")]

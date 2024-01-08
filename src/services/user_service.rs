@@ -15,6 +15,18 @@ impl<'a> UserService<'a> {
         UserService { state }
     }
 
+    pub async fn get_user_info(&self, user_id: i32) -> ServerResult<User> {
+        let beign = self.state.conn.begin().await?;
+
+        let storage = UserStorage::new(&beign);
+
+        let user = storage.find(user_id).await?;
+
+        beign.commit().await?;
+
+        Ok(user)
+    }
+
     pub async fn login(&self, form: UserLoginForm) -> ServerResult<String> {
         let encryptor = Encryptor::new(self.state.config.encrypt.secure.as_bytes());
         let encrypt_data = encryptor.encode(&form.auth_data);
