@@ -1,8 +1,10 @@
-use crate::{encryptor::Encryptor, state::State, ServerKind, ServerResult};
+use crate::{encryptor::Encryptor, jwt_helper::JwtHelper, state::State, ServerKind, ServerResult};
 
 use rand::{thread_rng, Rng};
 use rc_entity::sea_orm::TransactionTrait;
-use rc_storage::prelude::{User, UserForm, UserFormEncrypt, UserStorage};
+use rc_storage::prelude::{
+    User, UserForm, UserFormEncrypt, UserLoginForm, UserLoginFormEncrypt, UserStorage,
+};
 
 pub struct UserService<'a> {
     state: &'a State,
@@ -13,8 +15,24 @@ impl<'a> UserService<'a> {
         UserService { state }
     }
 
-    async fn login(&self, form: UserForm) -> ServerResult<User> {
-        todo!()
+    async fn login(&self, form: UserLoginForm) -> ServerResult<String> {
+        let encryptor = Encryptor::new(self.state.config.encrypt.secure.as_bytes());
+        let encrypt_data = encryptor.encode(&form.auth_data);
+
+        let form = UserLoginFormEncrypt::from_form(form, encrypt_data);
+        let beign = self.state.conn.begin().await?;
+
+        let storage = UserStorage::new(&beign);
+
+        let user = storage.login(form).await?;
+
+        beign.commit().await?;
+
+        let jwt_helper = JwtHelper::from_config(&self.state.config.jwt);
+
+        let token = jwt_helper.encode(&user.id.to_string())?;
+
+        Ok(token)
     }
 
     pub async fn get_range_avatar(&self) -> ServerResult<String> {
