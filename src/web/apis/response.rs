@@ -21,7 +21,7 @@ impl<T: ParseFromJSON + ToJSON + Send + Sync> ResponseObject<T> {
     pub fn ok(data: T) -> Self {
         Self {
             code: OK_CODE,
-            msg: "oK".to_string(),
+            msg: "ok".to_string(),
             data: Some(data),
         }
     }
