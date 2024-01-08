@@ -9,6 +9,10 @@ pub enum StorageKind {
     AuthExist,
     #[error("AuthExist")]
     UserExist,
+    #[error("UserNotFound")]
+    UserNotFound,
+    #[error("PasswordError")]
+    PasswordError,
 }
 
 #[derive(Debug, Error)]

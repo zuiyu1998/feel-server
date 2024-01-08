@@ -13,6 +13,10 @@ impl<'a> UserService<'a> {
         UserService { state }
     }
 
+    async fn login(&self, form: UserForm) -> ServerResult<User> {
+        todo!()
+    }
+
     pub async fn get_range_avatar(&self) -> ServerResult<String> {
         let guard = self.state.setting.read().await;
         let setting_value = (*guard)

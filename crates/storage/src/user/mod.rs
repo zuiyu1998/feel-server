@@ -22,6 +22,32 @@ impl<'a, C: ConnectionTrait> UserStorage<'a, C> {
         UserStorage { conn }
     }
 
+    pub async fn login(&self, form: UserLoginFormEncrypt) -> StorageResult<User> {
+        let auth_option = form.get_user_auth_option();
+
+        let auth = self.find_user_auth(auth_option).await?;
+
+        if auth.is_none() {
+            return Err(StorageKind::AuthNotFound.into());
+        }
+
+        let auth = auth.unwrap();
+
+        if auth.auth_data != form.auth_data {
+            return Err(StorageKind::PasswordError.into());
+        }
+
+        let user = UserBaseEntity::find_by_id(auth.user_id)
+            .one(self.conn)
+            .await?;
+
+        if user.is_none() {
+            return Err(StorageKind::UserNotFound.into());
+        }
+
+        Ok(User::from(user.unwrap()))
+    }
+
     pub async fn find_user_base(
         &self,
         option: UserBaseOption,

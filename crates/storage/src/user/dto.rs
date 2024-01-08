@@ -51,6 +51,44 @@ impl From<UserBaseModel> for User {
     }
 }
 
+pub struct UserLoginForm {
+    pub auth_class: AuthClass,
+    pub auth_name: String,
+    pub auth_data: String,
+}
+
+pub struct UserLoginFormEncrypt {
+    pub auth_class: AuthClass,
+    pub auth_name: String,
+    pub auth_data: Vec<u8>,
+}
+
+impl UserLoginFormEncrypt {
+    pub fn from_form(form: UserLoginForm, encrypt_data: Vec<u8>) -> UserLoginFormEncrypt {
+        let UserLoginForm {
+            auth_class,
+            auth_name,
+            ..
+        } = form;
+
+        UserLoginFormEncrypt {
+            auth_class,
+            auth_name,
+            auth_data: encrypt_data,
+        }
+    }
+}
+
+impl UserLoginFormEncrypt {
+    pub fn get_user_auth_option(&self) -> UserAuthOption {
+        UserAuthOption {
+            user_id: None,
+            auth_class: Some(self.auth_class.clone()),
+            unique_name: Some(self.auth_name.clone()),
+        }
+    }
+}
+
 pub struct UserForm {
     pub avatar: String,
     pub auth_class: AuthClass,
