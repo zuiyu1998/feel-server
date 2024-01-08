@@ -9,6 +9,10 @@ pub struct Model {
     pub user_id: i32,
     pub label_id: i32,
     pub sequence: i32,
+    pub create_at: ChronoDateTime,
+    pub update_at: ChronoDateTime,
+    pub is_delete: bool,
+    pub is_enable: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
