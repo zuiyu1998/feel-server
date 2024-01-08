@@ -15,7 +15,7 @@ impl<'a> UserService<'a> {
         UserService { state }
     }
 
-    async fn login(&self, form: UserLoginForm) -> ServerResult<String> {
+    pub async fn login(&self, form: UserLoginForm) -> ServerResult<String> {
         let encryptor = Encryptor::new(self.state.config.encrypt.secure.as_bytes());
         let encrypt_data = encryptor.encode(&form.auth_data);
 

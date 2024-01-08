@@ -5,7 +5,7 @@ mod user_api;
 mod response;
 
 pub fn create_apis() -> impl OpenApi {
-    user_api::Api
+    user_api::UserApi
 }
 
 #[derive(Tags)]

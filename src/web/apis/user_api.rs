@@ -5,7 +5,7 @@ use poem_openapi::{
     ApiResponse, Enum, Object, OpenApi,
 };
 
-use rc_storage::prelude::{AuthClass, User, UserForm};
+use rc_storage::prelude::{AuthClass, User, UserForm, UserLoginForm};
 
 use rc_storage::chrono::NaiveDateTime;
 
@@ -15,7 +15,7 @@ use super::response::{bad_request_handler, bad_response_handler, ResponseObject}
 
 use serde::{Deserialize, Serialize};
 
-pub struct Api;
+pub struct UserApi;
 
 #[derive(Enum, Debug, PartialEq, Serialize, Deserialize, Clone, Copy)]
 pub enum AuthClassRequest {
@@ -26,6 +26,23 @@ impl From<AuthClassRequest> for AuthClass {
     fn from(value: AuthClassRequest) -> Self {
         match value {
             AuthClassRequest::Email => AuthClass::Email,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, Object, Serialize)]
+pub struct UserLoginFormRequest {
+    pub auth_class: AuthClassRequest,
+    pub username: String,
+    pub password: String,
+}
+
+impl UserLoginFormRequest {
+    pub fn get_user_form(&self) -> UserLoginForm {
+        UserLoginForm {
+            auth_class: AuthClass::from(self.auth_class),
+            auth_name: self.username.clone(),
+            auth_data: self.password.clone(),
         }
     }
 }
@@ -86,7 +103,26 @@ fn inline_bad_request_handler<T: ParseFromJSON + ToJSON + Send + Sync>(
 }
 
 #[OpenApi(tag = "super::ApiTags::UserApi")]
-impl Api {
+impl UserApi {
+    #[oai(path = "/user/login", method = "post")]
+    async fn login(
+        &self,
+        form: Json<UserLoginFormRequest>,
+        state: Data<&State>,
+    ) -> UserApiResponse<String> {
+        let form = form.get_user_form();
+
+        let service = UserService::new(&state);
+        match service.login(form).await {
+            Err(e) => {
+                return UserApiResponse::Ok(Json(bad_response_handler(e)));
+            }
+            Ok(token) => {
+                return UserApiResponse::Ok(Json(ResponseObject::ok(token)));
+            }
+        }
+    }
+
     #[oai(path = "/user/get_range_avatar", method = "get")]
     async fn get_range_avatar(&self, state: Data<&State>) -> UserApiResponse<String> {
         let service = UserService::new(&state);
