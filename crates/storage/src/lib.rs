@@ -1,6 +1,7 @@
 mod error;
 mod user;
 
+mod label;
 mod setting;
 
 pub use error::*;
