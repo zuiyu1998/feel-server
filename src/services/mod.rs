@@ -1,3 +1,4 @@
+mod label_service;
 mod setting_service;
 mod user_service;
 

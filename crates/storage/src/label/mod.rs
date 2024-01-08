@@ -11,6 +11,10 @@ pub struct LabelStorage<'a, C> {
 }
 
 impl<'a, C: ConnectionTrait> LabelStorage<'a, C> {
+    pub fn new(conn: &'a C) -> Self {
+        LabelStorage { conn }
+    }
+
     pub async fn create_form(&self, form: LableForm) -> StorageResult<LabelTemplate> {
         let active = form.get_lable_active_model();
 
