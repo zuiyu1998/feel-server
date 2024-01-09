@@ -1,5 +1,5 @@
 use rc_entity::prelude::{get_now, UserLabelActiveModel};
-use rc_entity::sea_orm::{ActiveModelTrait, ConnectionTrait, Set, Statement};
+use rc_entity::sea_orm::{ActiveModelTrait, ConnectionTrait, FromQueryResult, Set, Statement};
 
 use crate::DATABASEBACKEND;
 
@@ -35,11 +35,30 @@ impl<'a, C: ConnectionTrait> LabelStorage<'a, C> {
     }
 
     pub async fn get_user_label_list(&self, user_id: i32) -> StorageResult<Vec<Label>> {
-        let sql = Statement::from_sql_and_values(DATABASEBACKEND, "", vec![]);
+        let stmt = Statement::from_sql_and_values(
+            DATABASEBACKEND,
+            r#"
+            select 
+            pul.id as id,
+            pul.user_id as user_id,
+            pul."sequence" as "sequence" ,
+            pul.create_at as create_at ,
+            pul.update_at as update_at ,
+            pl."name" as "name",
+            pl.description as description,
+            pl.effect as effect
+            from pb_user_label pul 
+            left join pb_label pl on pl.id = pul.label_id 
+            left join pb_user_base pub on pub.id = pul.user_id 
+            where user_id = $1
+            order by  pul."sequence" asc
+        "#,
+            vec![user_id.into()],
+        );
 
-        let sql = self.conn.query_all(sql).await?;
+        let labels = Label::find_by_statement(stmt).all(self.conn).await?;
 
-        todo!()
+        Ok(labels)
     }
 
     pub async fn create_form(&self, form: LableForm) -> StorageResult<LabelTemplate> {

@@ -3,8 +3,8 @@ use crate::{encryptor::Encryptor, jwt_helper::JwtHelper, state::State, ServerKin
 use rand::{thread_rng, Rng};
 use rc_entity::sea_orm::TransactionTrait;
 use rc_storage::prelude::{
-    LabelStorage, User, UserForm, UserFormEncrypt, UserLabel, UserLoginForm, UserLoginFormEncrypt,
-    UserStorage,
+    Label, LabelStorage, User, UserForm, UserFormEncrypt, UserLabel, UserLoginForm,
+    UserLoginFormEncrypt, UserStorage,
 };
 
 pub struct UserService<'a> {
@@ -25,6 +25,16 @@ impl<'a> UserService<'a> {
         beign.commit().await?;
 
         Ok(user_label)
+    }
+
+    pub async fn get_user_label_list(&self, user_id: i32) -> ServerResult<Vec<Label>> {
+        let beign = self.state.conn.begin().await?;
+        let storage = LabelStorage::new(&beign);
+
+        let labels = storage.get_user_label_list(user_id).await?;
+        beign.commit().await?;
+
+        Ok(labels)
     }
 
     pub async fn get_user_info(&self, user_id: i32) -> ServerResult<User> {

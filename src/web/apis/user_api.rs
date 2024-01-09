@@ -1,7 +1,7 @@
 use poem::web::Data;
 use poem_openapi::{payload::Json, types::Any, Enum, Object, OpenApi};
 
-use rc_storage::prelude::{AuthClass, User, UserForm, UserLabel, UserLoginForm};
+use rc_storage::prelude::{AuthClass, Label, User, UserForm, UserLabel, UserLoginForm};
 
 use rc_storage::chrono::NaiveDateTime;
 
@@ -91,6 +91,33 @@ impl UserLabelResponse {
 }
 
 #[derive(Debug, Object)]
+pub struct LabelResponse {
+    pub id: i32,
+    pub user_id: i32,
+    pub sequence: i32,
+    pub create_at: Any<NaiveDateTime>,
+    pub update_at: Any<NaiveDateTime>,
+    pub description: String,
+    pub name: String,
+    pub effect: i64,
+}
+
+impl LabelResponse {
+    fn from_label(label: Label) -> LabelResponse {
+        LabelResponse {
+            id: label.id,
+            user_id: label.user_id,
+            sequence: label.sequence,
+            description: label.description,
+            name: label.name,
+            effect: label.effect,
+            create_at: Any(label.create_at),
+            update_at: Any(label.update_at),
+        }
+    }
+}
+
+#[derive(Debug, Object)]
 pub struct UserResponse {
     pub id: i32,
     pub nikename: String,
@@ -130,6 +157,28 @@ impl UserApi {
             Ok(user) => {
                 return GenericApiResponse::Ok(Json(ResponseObject::ok(
                     UserLabelResponse::from_user_label(user),
+                )));
+            }
+        }
+    }
+
+    #[oai(path = "/user/get_user_label_list", method = "get")]
+    async fn get_user_label_list(
+        &self,
+        state: Data<&State>,
+        user_id: UserId,
+    ) -> GenericApiResponse<Vec<LabelResponse>> {
+        let service = UserService::new(&state);
+        match service.get_user_label_list(user_id.0).await {
+            Err(e) => {
+                return GenericApiResponse::Ok(Json(bad_response_handler(e)));
+            }
+            Ok(labels) => {
+                return GenericApiResponse::Ok(Json(ResponseObject::ok(
+                    labels
+                        .into_iter()
+                        .map(|label| LabelResponse::from_label(label))
+                        .collect::<Vec<LabelResponse>>(),
                 )));
             }
         }
