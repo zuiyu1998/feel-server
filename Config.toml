@@ -1,35 +1,35 @@
 [dev]
 
-[dev."server"]
+[dev.server]
 database_url = "postgresql://postgres:bj123456@localhost/feel-server"
 host = "0.0.0.0"
 port = 9000
 
-[dev."system"]
+[dev.system]
 name = "feel-server"
 version = "0.0.0"
 
-[dev."encrypt"]
+[dev.encrypt]
 secure = "feel"
 
-[dev."jwt"]
+[dev.jwt]
 secure = "feel"
 issuer = "feel.com"
 
 [production]
 
-[production."server"]
+[production.server]
 database_url = "postgresql://postgres:bj123456@localhost/feel-server"
 host = "0.0.0.0"
 port = 9000
 
-[production."system"]
+[production.system]
 name = "feel-server"
 version = "0.0.0"
 
-[production."encrypt"]
+[production.encrypt]
 secure = "feel"
 
-[production."jwt"]
+[production.jwt]
 secure = "feel"
 issuer = "feel.com"
