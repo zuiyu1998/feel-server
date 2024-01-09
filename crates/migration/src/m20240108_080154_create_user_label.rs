@@ -21,6 +21,11 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(UserLabelColumn::UserId).integer().not_null())
                     .col(
+                        ColumnDef::new(UserLabelColumn::Sequence)
+                            .integer()
+                            .not_null(),
+                    )
+                    .col(
                         ColumnDef::new(UserLabelColumn::LabelId)
                             .integer()
                             .not_null(),
