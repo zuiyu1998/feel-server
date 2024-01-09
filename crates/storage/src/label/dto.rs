@@ -1,6 +1,6 @@
 use rc_entity::chrono::NaiveDateTime;
-use rc_entity::prelude::{get_now, LabelActiveModel, LabelModel};
-use rc_entity::sea_orm::Set;
+use rc_entity::prelude::{get_now, LabelActiveModel, LabelModel, UserLabelModel};
+use rc_entity::sea_orm::{self, FromQueryResult, Set};
 
 pub struct LableForm {
     pub description: String,
@@ -24,6 +24,39 @@ impl LableForm {
     }
 }
 
+pub struct UserLabel {
+    pub id: i32,
+    pub user_id: i32,
+    pub label_id: i32,
+    pub sequence: i32,
+    pub create_at: NaiveDateTime,
+    pub update_at: NaiveDateTime,
+}
+
+impl From<UserLabelModel> for UserLabel {
+    fn from(value: UserLabelModel) -> Self {
+        let UserLabelModel {
+            id,
+            user_id,
+            label_id,
+            sequence,
+            create_at,
+            update_at,
+            ..
+        } = value;
+
+        UserLabel {
+            id,
+            user_id,
+            label_id,
+            sequence,
+            create_at,
+            update_at,
+        }
+    }
+}
+
+#[derive(Debug)]
 pub struct LabelLike {}
 
 pub struct LabelTemplate {
@@ -58,6 +91,7 @@ impl From<LabelModel> for LabelTemplate {
     }
 }
 
+#[derive(Debug, FromQueryResult)]
 pub struct Label {
     pub id: i32,
     pub user_id: i32,
@@ -67,5 +101,6 @@ pub struct Label {
     pub description: String,
     pub name: String,
     pub effect: i64,
+    #[sea_orm(skip)]
     pub links: Vec<LabelLike>,
 }
