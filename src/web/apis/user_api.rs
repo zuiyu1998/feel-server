@@ -1,7 +1,7 @@
 use poem::web::Data;
 use poem_openapi::{payload::Json, types::Any, Enum, Object, OpenApi};
 
-use rc_storage::prelude::{AuthClass, User, UserForm, UserLoginForm};
+use rc_storage::prelude::{AuthClass, User, UserForm, UserLabel, UserLoginForm};
 
 use rc_storage::chrono::NaiveDateTime;
 
@@ -24,6 +24,11 @@ impl From<AuthClassRequest> for AuthClass {
             AuthClassRequest::Email => AuthClass::Email,
         }
     }
+}
+
+#[derive(Debug, Deserialize, Object, Serialize)]
+pub struct AddLabelFormRequest {
+    pub lable_id: i32,
 }
 
 #[derive(Debug, Deserialize, Object, Serialize)]
@@ -63,6 +68,29 @@ impl UserFormRequest {
 }
 
 #[derive(Debug, Object)]
+pub struct UserLabelResponse {
+    pub id: i32,
+    pub user_id: i32,
+    pub label_id: i32,
+    pub sequence: i32,
+    pub create_at: Any<NaiveDateTime>,
+    pub update_at: Any<NaiveDateTime>,
+}
+
+impl UserLabelResponse {
+    fn from_user_label(user_label: UserLabel) -> UserLabelResponse {
+        UserLabelResponse {
+            id: user_label.id,
+            user_id: user_label.user_id,
+            label_id: user_label.label_id,
+            sequence: user_label.sequence,
+            create_at: Any(user_label.create_at),
+            update_at: Any(user_label.update_at),
+        }
+    }
+}
+
+#[derive(Debug, Object)]
 pub struct UserResponse {
     pub id: i32,
     pub nikename: String,
@@ -87,7 +115,27 @@ impl UserResponse {
 
 #[OpenApi(tag = "super::ApiTags::UserApi")]
 impl UserApi {
-    #[oai(path = "/user/get_user_info", method = "post")]
+    #[oai(path = "/user/add_label", method = "post")]
+    async fn add_label(
+        &self,
+        state: Data<&State>,
+        user_id: UserId,
+        form: Json<AddLabelFormRequest>,
+    ) -> GenericApiResponse<UserLabelResponse> {
+        let service = UserService::new(&state);
+        match service.add_label(user_id.0, form.lable_id).await {
+            Err(e) => {
+                return GenericApiResponse::Ok(Json(bad_response_handler(e)));
+            }
+            Ok(user) => {
+                return GenericApiResponse::Ok(Json(ResponseObject::ok(
+                    UserLabelResponse::from_user_label(user),
+                )));
+            }
+        }
+    }
+
+    #[oai(path = "/user/get_user_info", method = "get")]
     async fn get_user_info(
         &self,
         state: Data<&State>,
