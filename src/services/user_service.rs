@@ -3,8 +3,8 @@ use crate::{encryptor::Encryptor, jwt_helper::JwtHelper, state::State, ServerKin
 use rand::{thread_rng, Rng};
 use rc_entity::sea_orm::TransactionTrait;
 use rc_storage::prelude::{
-    Label, LabelStorage, Trend, TrendForm, TrendStorage, User, UserForm, UserFormEncrypt,
-    UserLabel, UserLoginForm, UserLoginFormEncrypt, UserStorage,
+    Label, LabelStorage, Trend, TrendForm, TrendParams, TrendStorage, User, UserForm,
+    UserFormEncrypt, UserLabel, UserLoginForm, UserLoginFormEncrypt, UserStorage,
 };
 
 pub struct UserService<'a> {
@@ -14,6 +14,15 @@ pub struct UserService<'a> {
 impl<'a> UserService<'a> {
     pub fn new(state: &'a State) -> Self {
         UserService { state }
+    }
+
+    pub async fn get_trend_list(&self, params: TrendParams) -> ServerResult<Vec<Trend>> {
+        let beign = self.state.conn.begin().await?;
+        let storage = TrendStorage::new(&beign);
+        let trends = storage.get_list(params).await?;
+        beign.commit().await?;
+
+        Ok(trends)
     }
 
     pub async fn add_trend(&self, form: TrendForm) -> ServerResult<Trend> {

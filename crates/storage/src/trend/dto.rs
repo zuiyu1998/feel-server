@@ -4,6 +4,12 @@ use rc_entity::sea_orm::Set;
 
 use crate::commit::CommitMeta;
 
+pub struct TrendParams {
+    pub page: u64,
+    pub page_size: u64,
+    pub user_id: Option<i32>,
+}
+
 pub struct TrendForm {
     pub user_id: i32,
     pub content: String,
