@@ -1,7 +1,34 @@
 use rc_entity::chrono::NaiveDateTime;
-use rc_entity::prelude::TrendModel;
+use rc_entity::prelude::{get_now, TrendActiveModel, TrendModel};
+use rc_entity::sea_orm::Set;
 
 use crate::commit::CommitMeta;
+
+pub struct TrendForm {
+    pub user_id: i32,
+    pub content: String,
+    pub meta: Option<TrendMeta>,
+}
+
+impl TrendForm {
+    pub fn get_trend_active_model(&self) -> TrendActiveModel {
+        let mut active: TrendActiveModel = Default::default();
+
+        let now = get_now();
+
+        if let Some(meta) = self.meta.as_ref() {
+            active.meta_soure_id = Set(Some(meta.source_id));
+            active.meta_source = Set(Some(meta.source.clone()));
+        }
+
+        active.user_id = Set(self.user_id);
+        active.content = Set(self.content.clone());
+        active.update_at = Set(now.clone());
+        active.create_at = Set(now.clone());
+
+        active
+    }
+}
 
 pub struct TrendMeta {
     pub source: String,
