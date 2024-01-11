@@ -25,6 +25,8 @@ impl TrendForm {
         active.content = Set(self.content.clone());
         active.update_at = Set(now.clone());
         active.create_at = Set(now.clone());
+        active.like_count = Set(0);
+        active.unlike_count = Set(0);
 
         active
     }
