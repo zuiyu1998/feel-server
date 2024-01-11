@@ -23,4 +23,6 @@ pub mod prelude {
     pub use crate::label::*;
 
     pub use crate::commit::*;
+
+    pub use crate::trend::*;
 }

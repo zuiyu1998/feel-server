@@ -1,7 +1,9 @@
 use poem::web::Data;
 use poem_openapi::{payload::Json, types::Any, Enum, Object, OpenApi};
 
-use rc_storage::prelude::{AuthClass, Label, User, UserForm, UserLabel, UserLoginForm};
+use rc_storage::prelude::{
+    AuthClass, Label, Trend, TrendForm, TrendMeta, User, UserForm, UserLabel, UserLoginForm,
+};
 
 use rc_storage::chrono::NaiveDateTime;
 
@@ -29,6 +31,21 @@ impl From<AuthClassRequest> for AuthClass {
 #[derive(Debug, Deserialize, Object, Serialize)]
 pub struct AddLabelFormRequest {
     pub lable_id: i32,
+}
+
+#[derive(Debug, Deserialize, Object, Serialize)]
+pub struct TrendFormRequest {
+    pub content: String,
+}
+
+impl TrendFormRequest {
+    pub fn get_form(&self, user_id: i32) -> TrendForm {
+        TrendForm {
+            user_id,
+            content: self.content.clone(),
+            meta: None,
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, Object, Serialize)]
@@ -118,6 +135,50 @@ impl LabelResponse {
 }
 
 #[derive(Debug, Object)]
+pub struct TrendMetaResponse {
+    pub source: String,
+    pub source_id: i32,
+}
+
+impl TrendMetaResponse {
+    fn from_meta(trend_meta: TrendMeta) -> TrendMetaResponse {
+        TrendMetaResponse {
+            source: trend_meta.source,
+            source_id: trend_meta.source_id,
+        }
+    }
+}
+
+#[derive(Debug, Object)]
+pub struct TrendResponse {
+    pub id: i32,
+    pub user_id: i32,
+    pub content: String,
+    pub meta: Option<TrendMetaResponse>,
+    pub create_at: Any<NaiveDateTime>,
+    pub update_at: Any<NaiveDateTime>,
+    pub like_count: i32,
+    pub unlike_count: i32,
+}
+
+impl TrendResponse {
+    fn from_trend(trend: Trend) -> TrendResponse {
+        TrendResponse {
+            id: trend.id,
+            user_id: trend.user_id,
+            content: trend.content,
+            like_count: trend.like_count,
+            unlike_count: trend.unlike_count,
+            create_at: Any(trend.create_at),
+            update_at: Any(trend.update_at),
+            meta: trend
+                .meta
+                .and_then(|meta| Some(TrendMetaResponse::from_meta(meta))),
+        }
+    }
+}
+
+#[derive(Debug, Object)]
 pub struct UserResponse {
     pub id: i32,
     pub nikename: String,
@@ -142,6 +203,27 @@ impl UserResponse {
 
 #[OpenApi(tag = "super::ApiTags::UserApi")]
 impl UserApi {
+    #[oai(path = "/user/add_trend", method = "post")]
+    async fn add_trend(
+        &self,
+        state: Data<&State>,
+        user_id: UserId,
+        form: Json<TrendFormRequest>,
+    ) -> GenericApiResponse<TrendResponse> {
+        let service = UserService::new(&state);
+        let form = form.get_form(user_id.0);
+
+        match service.add_trend(form).await {
+            Err(e) => {
+                return GenericApiResponse::Ok(Json(bad_response_handler(e)));
+            }
+            Ok(trend) => {
+                return GenericApiResponse::Ok(Json(ResponseObject::ok(
+                    TrendResponse::from_trend(trend),
+                )));
+            }
+        }
+    }
     #[oai(path = "/user/add_label", method = "post")]
     async fn add_label(
         &self,

@@ -47,11 +47,11 @@ pub struct Trend {
 }
 
 impl Trend {
-    pub fn get_commit_meta(&self) -> CommitMeta {
+    pub fn get_commit_meta(user_id: i32, source_id: i32) -> CommitMeta {
         CommitMeta {
-            user_id: self.user_id,
+            user_id,
             source: "trend".to_owned(),
-            source_id: self.id,
+            source_id,
         }
     }
 }
