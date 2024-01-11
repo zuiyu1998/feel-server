@@ -12,9 +12,11 @@ pub struct Model {
     pub update_at: ChronoDateTime,
     pub is_delete: bool,
     pub is_enable: bool,
+    pub like_count: i32,
+    pub unlike_count: i32,
     pub meta_user_id: i32,
     pub meta_source: String,
-    pub meta_soure_id: String,
+    pub meta_soure_id: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
