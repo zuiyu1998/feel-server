@@ -21,12 +21,8 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(TrendColumn::UserId).integer().not_null())
                     .col(ColumnDef::new(TrendColumn::LikeCount).integer().not_null())
-                    .col(ColumnDef::new(TrendColumn::MetaSource).string().not_null())
-                    .col(
-                        ColumnDef::new(TrendColumn::MetaSoureId)
-                            .integer()
-                            .not_null(),
-                    )
+                    .col(ColumnDef::new(TrendColumn::MetaSource).string())
+                    .col(ColumnDef::new(TrendColumn::MetaSoureId).integer())
                     .col(
                         ColumnDef::new(TrendColumn::UnlikeCount)
                             .integer()
