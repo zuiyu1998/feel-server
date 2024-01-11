@@ -7,6 +7,7 @@ mod dto;
 
 pub use dto::*;
 
+use crate::utils::MetaHelper;
 use crate::StorageResult;
 
 pub struct TrendStorage<'a, C> {
@@ -18,7 +19,7 @@ impl<'a, C: ConnectionTrait> TrendStorage<'a, C> {
         TrendStorage { conn }
     }
 
-    pub async fn get_list(&self, params: TrendParams) -> StorageResult<Vec<Trend>> {
+    pub async fn get_list(&self, params: TrendParams) -> StorageResult<Vec<TrendDetail>> {
         let mut sql = TrendEntity::find();
 
         if let Some(user_id) = params.user_id {
@@ -34,7 +35,9 @@ impl<'a, C: ConnectionTrait> TrendStorage<'a, C> {
             .map(|item| Trend::from(item))
             .collect::<Vec<Trend>>();
 
-        Ok(trends)
+        let trend_details = MetaHelper::update_trends(self.conn, trends).await?;
+
+        Ok(trend_details)
     }
 
     pub async fn create_trend(&self, form: TrendForm) -> StorageResult<Trend> {

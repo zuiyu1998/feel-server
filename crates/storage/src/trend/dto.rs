@@ -3,8 +3,48 @@ use rc_entity::prelude::{get_now, TrendActiveModel, TrendEntityMetaSource, Trend
 use rc_entity::sea_orm::Set;
 
 use crate::commit::CommitMeta;
-use crate::prelude::CommitMetaSource;
 use crate::utils::MetaHelper;
+
+pub enum MetaDetail {}
+
+pub struct TrendDetail {
+    pub id: i32,
+    pub user_id: i32,
+    pub content: String,
+    pub meta: Option<TrendMeta>,
+    pub create_at: NaiveDateTime,
+    pub update_at: NaiveDateTime,
+    pub like_count: i32,
+    pub unlike_count: i32,
+    pub meta_detail: Option<MetaDetail>,
+}
+
+impl TrendDetail {
+    pub fn from_trend(trend: Trend) -> Self {
+        let Trend {
+            id,
+            user_id,
+            content,
+            meta,
+            create_at,
+            update_at,
+            like_count,
+            unlike_count,
+        } = trend;
+
+        TrendDetail {
+            id,
+            user_id,
+            content,
+            meta,
+            create_at,
+            update_at,
+            like_count,
+            unlike_count,
+            meta_detail: None,
+        }
+    }
+}
 
 pub struct TrendParams {
     pub page: u64,

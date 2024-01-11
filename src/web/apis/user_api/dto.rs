@@ -1,8 +1,8 @@
 use poem_openapi::{types::Any, Enum, Object};
 
 use rc_storage::prelude::{
-    AuthClass, Label, Trend, TrendForm, TrendMeta, TrendMetaSource, TrendParams, User, UserForm,
-    UserLabel, UserLoginForm,
+    AuthClass, Label, Trend, TrendDetail, TrendForm, TrendMeta, TrendMetaSource, TrendParams, User,
+    UserForm, UserLabel, UserLoginForm,
 };
 
 use rc_storage::chrono::NaiveDateTime;
@@ -174,7 +174,7 @@ impl TrendMetaResponse {
 
 #[derive(Debug, Object)]
 pub struct TrendListResponse {
-    pub data: Vec<TrendResponse>,
+    pub data: Vec<TrendDetailResponse>,
     pub has_next: bool,
     pub page: u64,
     pub page_size: u64,
@@ -195,6 +195,35 @@ pub struct TrendResponse {
 impl TrendResponse {
     pub fn from_trend(trend: Trend) -> TrendResponse {
         TrendResponse {
+            id: trend.id,
+            user_id: trend.user_id,
+            content: trend.content,
+            like_count: trend.like_count,
+            unlike_count: trend.unlike_count,
+            create_at: Any(trend.create_at),
+            update_at: Any(trend.update_at),
+            meta: trend
+                .meta
+                .and_then(|meta| Some(TrendMetaResponse::from_meta(meta))),
+        }
+    }
+}
+
+#[derive(Debug, Object)]
+pub struct TrendDetailResponse {
+    pub id: i32,
+    pub user_id: i32,
+    pub content: String,
+    pub meta: Option<TrendMetaResponse>,
+    pub create_at: Any<NaiveDateTime>,
+    pub update_at: Any<NaiveDateTime>,
+    pub like_count: i32,
+    pub unlike_count: i32,
+}
+
+impl TrendDetailResponse {
+    pub fn from_trend(trend: TrendDetail) -> TrendDetailResponse {
+        TrendDetailResponse {
             id: trend.id,
             user_id: trend.user_id,
             content: trend.content,

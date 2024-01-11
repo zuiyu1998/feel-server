@@ -41,8 +41,8 @@ impl UserApi {
                     has_next,
                     data: trends
                         .into_iter()
-                        .map(|trend| TrendResponse::from_trend(trend))
-                        .collect::<Vec<TrendResponse>>(),
+                        .map(|trend| TrendDetailResponse::from_trend(trend))
+                        .collect::<Vec<TrendDetailResponse>>(),
                     page: page_size,
                     page_size: page,
                 };
