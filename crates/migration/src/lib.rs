@@ -6,6 +6,7 @@ mod m20240107_132002_create_setting;
 mod m20240108_075749_create_label;
 mod m20240108_080154_create_user_label;
 mod m20240111_061707_create_commit;
+mod m20240111_073155_create_trend;
 
 pub struct Migrator;
 
@@ -19,6 +20,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20240108_075749_create_label::Migration),
             Box::new(m20240108_080154_create_user_label::Migration),
             Box::new(m20240111_061707_create_commit::Migration),
+            Box::new(m20240111_073155_create_trend::Migration),
         ]
     }
 }
