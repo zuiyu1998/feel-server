@@ -14,7 +14,7 @@ pub struct Model {
     pub is_enable: bool,
     pub like_count: i32,
     pub unlike_count: i32,
-    pub meta_source: Option<String>,
+    pub meta_source: Option<TrendMetaSource>,
     pub meta_soure_id: Option<i32>,
 }
 
@@ -22,3 +22,10 @@ pub struct Model {
 pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
+
+#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Deserialize, Serialize)]
+#[sea_orm(rs_type = "String", db_type = "String(None)")]
+pub enum TrendMetaSource {
+    #[sea_orm(string_value = "Article")]
+    Article,
+}

@@ -8,6 +8,8 @@ mod label;
 mod setting;
 mod trend;
 
+mod utils;
+
 pub use error::*;
 
 pub use rc_entity::chrono;

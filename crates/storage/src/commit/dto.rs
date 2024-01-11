@@ -1,11 +1,32 @@
 use rc_entity::chrono::NaiveDateTime;
-use rc_entity::prelude::{get_now, CommitActiveModel, CommitModel};
+use rc_entity::prelude::{get_now, CommitActiveModel, CommitEntityMetaSource, CommitModel};
 use rc_entity::sea_orm::Set;
 
 pub struct CommitMeta {
     pub user_id: i32,
-    pub source: String,
+    pub source: CommitMetaSource,
     pub source_id: i32,
+}
+
+#[derive(Debug, Clone)]
+pub enum CommitMetaSource {
+    Trend,
+}
+
+impl From<CommitEntityMetaSource> for CommitMetaSource {
+    fn from(value: CommitEntityMetaSource) -> Self {
+        match value {
+            CommitEntityMetaSource::Trend => CommitMetaSource::Trend,
+        }
+    }
+}
+
+impl From<CommitMetaSource> for CommitEntityMetaSource {
+    fn from(value: CommitMetaSource) -> Self {
+        match value {
+            CommitMetaSource::Trend => CommitEntityMetaSource::Trend,
+        }
+    }
 }
 
 pub struct CommitForm {
@@ -22,7 +43,7 @@ impl CommitForm {
 
         active.meta_user_id = Set(self.meta.user_id);
         active.meta_soure_id = Set(self.meta.source_id);
-        active.meta_source = Set(self.meta.source.clone());
+        active.meta_source = Set(CommitEntityMetaSource::from(self.meta.source.clone()));
 
         active.user_id = Set(self.user_id);
         active.content = Set(self.content.clone());
@@ -62,7 +83,7 @@ impl From<CommitModel> for Commit {
 
         let meta = CommitMeta {
             user_id: meta_user_id,
-            source: meta_source,
+            source: CommitMetaSource::from(meta_source),
             source_id: meta_soure_id,
         };
 

@@ -1,8 +1,10 @@
 use rc_entity::chrono::NaiveDateTime;
-use rc_entity::prelude::{get_now, TrendActiveModel, TrendModel};
+use rc_entity::prelude::{get_now, TrendActiveModel, TrendEntityMetaSource, TrendModel};
 use rc_entity::sea_orm::Set;
 
 use crate::commit::CommitMeta;
+use crate::prelude::CommitMetaSource;
+use crate::utils::MetaHelper;
 
 pub struct TrendParams {
     pub page: u64,
@@ -24,7 +26,7 @@ impl TrendForm {
 
         if let Some(meta) = self.meta.as_ref() {
             active.meta_soure_id = Set(Some(meta.source_id));
-            active.meta_source = Set(Some(meta.source.clone()));
+            active.meta_source = Set(Some(TrendEntityMetaSource::from(meta.source.clone())));
         }
 
         active.user_id = Set(self.user_id);
@@ -38,8 +40,29 @@ impl TrendForm {
     }
 }
 
+#[derive(Debug, Clone)]
+pub enum TrendMetaSource {
+    Article,
+}
+
+impl From<TrendEntityMetaSource> for TrendMetaSource {
+    fn from(value: TrendEntityMetaSource) -> Self {
+        match value {
+            TrendEntityMetaSource::Article => TrendMetaSource::Article,
+        }
+    }
+}
+
+impl From<TrendMetaSource> for TrendEntityMetaSource {
+    fn from(value: TrendMetaSource) -> Self {
+        match value {
+            TrendMetaSource::Article => TrendEntityMetaSource::Article,
+        }
+    }
+}
+
 pub struct TrendMeta {
-    pub source: String,
+    pub source: TrendMetaSource,
     pub source_id: i32,
 }
 
@@ -56,11 +79,7 @@ pub struct Trend {
 
 impl Trend {
     pub fn get_commit_meta(user_id: i32, source_id: i32) -> CommitMeta {
-        CommitMeta {
-            user_id,
-            source: "trend".to_owned(),
-            source_id,
-        }
+        MetaHelper::get_trend_commit_meta(user_id, source_id)
     }
 }
 
@@ -83,7 +102,7 @@ impl From<TrendModel> for Trend {
 
         if meta_source.is_some() && meta_soure_id.is_some() {
             meta = Some(TrendMeta {
-                source: meta_source.unwrap(),
+                source: TrendMetaSource::from(meta_source.unwrap()),
                 source_id: meta_soure_id.unwrap(),
             });
         }

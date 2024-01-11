@@ -15,7 +15,7 @@ pub struct Model {
     pub like_count: i32,
     pub unlike_count: i32,
     pub meta_user_id: i32,
-    pub meta_source: String,
+    pub meta_source: CommitMetaSource,
     pub meta_soure_id: i32,
 }
 
@@ -23,3 +23,10 @@ pub struct Model {
 pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
+
+#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Deserialize, Serialize)]
+#[sea_orm(rs_type = "String", db_type = "String(None)")]
+pub enum CommitMetaSource {
+    #[sea_orm(string_value = "Trend")]
+    Trend,
+}

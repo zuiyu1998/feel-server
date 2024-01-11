@@ -1,8 +1,8 @@
 use poem_openapi::{types::Any, Enum, Object};
 
 use rc_storage::prelude::{
-    AuthClass, Label, Trend, TrendForm, TrendMeta, TrendParams, User, UserForm, UserLabel,
-    UserLoginForm,
+    AuthClass, Label, Trend, TrendForm, TrendMeta, TrendMetaSource, TrendParams, User, UserForm,
+    UserLabel, UserLoginForm,
 };
 
 use rc_storage::chrono::NaiveDateTime;
@@ -144,16 +144,29 @@ impl LabelResponse {
     }
 }
 
+#[derive(Enum, Debug, PartialEq, Serialize, Deserialize, Clone, Copy)]
+pub enum TrendMetaSourceEnum {
+    Article,
+}
+
+impl From<TrendMetaSource> for TrendMetaSourceEnum {
+    fn from(value: TrendMetaSource) -> Self {
+        match value {
+            TrendMetaSource::Article => TrendMetaSourceEnum::Article,
+        }
+    }
+}
+
 #[derive(Debug, Object)]
 pub struct TrendMetaResponse {
-    pub source: String,
+    pub source: TrendMetaSourceEnum,
     pub source_id: i32,
 }
 
 impl TrendMetaResponse {
     pub fn from_meta(trend_meta: TrendMeta) -> TrendMetaResponse {
         TrendMetaResponse {
-            source: trend_meta.source,
+            source: trend_meta.source.into(),
             source_id: trend_meta.source_id,
         }
     }
