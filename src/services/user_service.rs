@@ -3,8 +3,8 @@ use crate::{encryptor::Encryptor, jwt_helper::JwtHelper, state::State, ServerKin
 use rand::{thread_rng, Rng};
 use rc_entity::sea_orm::TransactionTrait;
 use rc_storage::prelude::{
-    Label, LabelStorage, User, UserForm, UserFormEncrypt, UserLabel, UserLoginForm,
-    UserLoginFormEncrypt, UserStorage,
+    Commit, CommitForm, CommitStorage, Label, LabelStorage, User, UserForm, UserFormEncrypt,
+    UserLabel, UserLoginForm, UserLoginFormEncrypt, UserStorage,
 };
 
 pub struct UserService<'a> {
@@ -14,6 +14,17 @@ pub struct UserService<'a> {
 impl<'a> UserService<'a> {
     pub fn new(state: &'a State) -> Self {
         UserService { state }
+    }
+
+    pub async fn add_commit(&self, form: CommitForm) -> ServerResult<Commit> {
+        let beign = self.state.conn.begin().await?;
+        let storage = CommitStorage::new(&beign);
+
+        let commit = storage.crate_commit(form).await?;
+
+        beign.commit().await?;
+
+        Ok(commit)
     }
 
     pub async fn add_label(&self, user_id: i32, label_id: i32) -> ServerResult<UserLabel> {

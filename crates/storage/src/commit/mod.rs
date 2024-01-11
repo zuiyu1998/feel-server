@@ -14,6 +14,10 @@ pub struct CommitStorage<'a, C> {
 }
 
 impl<'a, C: ConnectionTrait> CommitStorage<'a, C> {
+    pub fn new(conn: &'a C) -> Self {
+        CommitStorage { conn }
+    }
+
     pub async fn crate_commit(&self, form: CommitForm) -> StorageResult<Commit> {
         let active = form.get_commit_active_model();
 
