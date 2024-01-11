@@ -1,5 +1,6 @@
 pub use sea_orm;
 
+mod commit;
 mod label;
 mod setting;
 mod user;
