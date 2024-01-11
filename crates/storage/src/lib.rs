@@ -6,6 +6,7 @@ mod user;
 mod commit;
 mod label;
 mod setting;
+mod trend;
 
 pub use error::*;
 
