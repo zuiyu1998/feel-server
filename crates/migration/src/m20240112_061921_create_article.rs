@@ -26,7 +26,7 @@ impl MigrationTrait for Migration {
                             .not_null(),
                     )
                     .col(ColumnDef::new(ArticleColumn::Title).string())
-                    .col(ColumnDef::new(ArticleColumn::Background).integer())
+                    .col(ColumnDef::new(ArticleColumn::Background).string())
                     .col(
                         ColumnDef::new(ArticleColumn::UnlikeCount)
                             .integer()
