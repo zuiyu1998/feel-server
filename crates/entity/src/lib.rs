@@ -12,6 +12,7 @@ pub use chrono;
 
 pub mod prelude {
 
+    pub use crate::article::*;
     pub use crate::commit::*;
     pub use crate::label::*;
     pub use crate::setting::*;
