@@ -3,10 +3,12 @@ use rc_entity::prelude::{get_now, TrendActiveModel, TrendEntityMetaSource, Trend
 use rc_entity::sea_orm::Set;
 
 use crate::commit::CommitMeta;
+use crate::prelude::{Article, User};
 use crate::utils::MetaHelper;
 
-#[derive(Debug)]
-pub enum MetaDetail {}
+pub enum MetaDetail {
+    Article(Article),
+}
 
 pub struct TrendDetail {
     pub id: i32,
@@ -18,6 +20,7 @@ pub struct TrendDetail {
     pub like_count: i32,
     pub unlike_count: i32,
     pub meta_detail: Option<MetaDetail>,
+    pub user: Option<User>,
 }
 
 impl TrendDetail {
@@ -43,6 +46,7 @@ impl TrendDetail {
             like_count,
             unlike_count,
             meta_detail: None,
+            user: None,
         }
     }
 }

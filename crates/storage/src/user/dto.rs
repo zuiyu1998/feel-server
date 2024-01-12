@@ -18,7 +18,7 @@ pub struct UserAuthOption {
     pub unique_name: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub struct User {
     pub id: i32,
     pub nikename: String,

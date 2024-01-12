@@ -1,7 +1,8 @@
+use poem_openapi::Union;
 use poem_openapi::{types::Any, Enum, Object};
 
 use rc_storage::prelude::{
-    Article, ArticleForm, AuthClass, Label, Trend, TrendDetail, TrendForm, TrendMeta,
+    Article, ArticleForm, AuthClass, Label, MetaDetail, Trend, TrendDetail, TrendForm, TrendMeta,
     TrendMetaSource, TrendParams, User, UserForm, UserLabel, UserLoginForm,
 };
 
@@ -266,24 +267,35 @@ pub struct TrendDetailResponse {
     pub update_at: Any<NaiveDateTime>,
     pub like_count: i32,
     pub unlike_count: i32,
-    pub meta_value: MetaDetailResponse,
+    pub meta_value: Option<MetaDetailResponse>,
+    pub user: Option<UserResponse>,
 }
 
-#[derive(Enum, Debug)]
+#[derive(Union, Debug)]
+#[oai(discriminator_name = "meta_source")]
 pub enum MetaDetailResponse {
-    Null,
+    Article(ArticleResponse),
 }
 
 impl MetaDetailResponse {
-    pub fn from_meta_detail() -> MetaDetailResponse {
-        MetaDetailResponse::Null
+    pub fn from_meta_detail(meta_detail: MetaDetail) -> MetaDetailResponse {
+        match meta_detail {
+            MetaDetail::Article(artilce) => {
+                MetaDetailResponse::Article(ArticleResponse::from_article(artilce))
+            }
+        }
     }
 }
 
 impl TrendDetailResponse {
     pub fn from_trend(trend: TrendDetail) -> TrendDetailResponse {
         TrendDetailResponse {
-            meta_value: MetaDetailResponse::from_meta_detail(),
+            user: trend
+                .user
+                .and_then(|user| Some(UserResponse::from_user(user))),
+            meta_value: trend
+                .meta_detail
+                .and_then(|meta_detail| Some(MetaDetailResponse::from_meta_detail(meta_detail))),
             id: trend.id,
             user_id: trend.user_id,
             content: trend.content,

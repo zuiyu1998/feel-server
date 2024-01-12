@@ -31,6 +31,7 @@ impl ArticleForm {
     }
 }
 
+#[derive(Clone)]
 pub struct Article {
     pub id: i32,
     pub user_id: i32,
