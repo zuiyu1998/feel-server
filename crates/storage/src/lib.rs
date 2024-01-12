@@ -28,4 +28,8 @@ pub mod prelude {
     pub use crate::commit::*;
 
     pub use crate::trend::*;
+
+    pub use crate::article::*;
+
+    pub use crate::utils::RelatedThrend;
 }

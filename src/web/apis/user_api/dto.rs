@@ -1,13 +1,60 @@
 use poem_openapi::{types::Any, Enum, Object};
 
 use rc_storage::prelude::{
-    AuthClass, Label, MetaDetail, Trend, TrendDetail, TrendForm, TrendMeta, TrendMetaSource,
-    TrendParams, User, UserForm, UserLabel, UserLoginForm,
+    Article, ArticleForm, AuthClass, Label, Trend, TrendDetail, TrendForm, TrendMeta,
+    TrendMetaSource, TrendParams, User, UserForm, UserLabel, UserLoginForm,
 };
 
 use rc_storage::chrono::NaiveDateTime;
 
 use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Deserialize, Object, Serialize)]
+pub struct ArticleFormRequest {
+    pub title: String,
+    pub background: String,
+    pub content: String,
+}
+
+impl ArticleFormRequest {
+    pub fn get_form(&self, user_id: i32) -> ArticleForm {
+        ArticleForm {
+            user_id,
+            title: self.title.clone(),
+            background: self.background.clone(),
+            content: self.content.clone(),
+        }
+    }
+}
+
+#[derive(Debug, Object)]
+pub struct ArticleResponse {
+    pub id: i32,
+    pub user_id: i32,
+    pub title: String,
+    pub background: String,
+    pub content: String,
+    pub create_at: Any<NaiveDateTime>,
+    pub update_at: Any<NaiveDateTime>,
+    pub like_count: i32,
+    pub unlike_count: i32,
+}
+
+impl ArticleResponse {
+    pub fn from_article(article: Article) -> ArticleResponse {
+        ArticleResponse {
+            id: article.id,
+            user_id: article.user_id,
+            content: article.content,
+            like_count: article.like_count,
+            unlike_count: article.unlike_count,
+            create_at: Any(article.create_at),
+            update_at: Any(article.update_at),
+            title: article.title,
+            background: article.background,
+        }
+    }
+}
 
 #[derive(Enum, Debug, PartialEq, Serialize, Deserialize, Clone, Copy)]
 pub enum AuthClassRequest {

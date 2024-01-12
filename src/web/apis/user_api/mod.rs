@@ -13,6 +13,28 @@ pub struct UserApi;
 
 #[OpenApi(tag = "super::ApiTags::UserApi")]
 impl UserApi {
+    #[oai(path = "/user/add_article", method = "post")]
+    async fn add_article(
+        &self,
+        state: Data<&State>,
+        user_id: UserId,
+        form: Json<ArticleFormRequest>,
+    ) -> GenericApiResponse<ArticleResponse> {
+        let service = UserService::new(&state);
+        let form = form.get_form(user_id.0);
+
+        match service.add_article(form).await {
+            Err(e) => {
+                return GenericApiResponse::Ok(Json(bad_response_handler(e)));
+            }
+            Ok(article) => {
+                return GenericApiResponse::Ok(Json(ResponseObject::ok(
+                    ArticleResponse::from_article(article),
+                )));
+            }
+        }
+    }
+
     #[oai(path = "/user/get_trend_list", method = "post")]
     async fn get_trend_list(
         &self,
