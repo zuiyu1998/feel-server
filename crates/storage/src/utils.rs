@@ -1,7 +1,9 @@
 use rc_entity::sea_orm::ConnectionTrait;
 
 use crate::{
-    prelude::{CommitMeta, CommitMetaSource, Trend, TrendDetail, TrendMeta, TrendMetaSource},
+    prelude::{
+        CommitMeta, CommitMetaSource, Trend, TrendDetail, TrendForm, TrendMeta, TrendMetaSource,
+    },
     StorageResult,
 };
 
@@ -45,4 +47,8 @@ impl MetaHelper {
 
         Ok(target)
     }
+}
+
+pub trait RelatedThrend {
+    fn get_thrend_form(&self) -> TrendForm;
 }

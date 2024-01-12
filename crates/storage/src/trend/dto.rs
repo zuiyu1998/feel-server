@@ -5,6 +5,7 @@ use rc_entity::sea_orm::Set;
 use crate::commit::CommitMeta;
 use crate::utils::MetaHelper;
 
+#[derive(Debug)]
 pub enum MetaDetail {}
 
 pub struct TrendDetail {

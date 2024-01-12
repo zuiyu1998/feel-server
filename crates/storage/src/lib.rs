@@ -3,6 +3,7 @@ use rc_entity::sea_orm::DatabaseBackend;
 mod error;
 mod user;
 
+mod article;
 mod commit;
 mod label;
 mod setting;

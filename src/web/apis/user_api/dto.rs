@@ -1,8 +1,8 @@
 use poem_openapi::{types::Any, Enum, Object};
 
 use rc_storage::prelude::{
-    AuthClass, Label, Trend, TrendDetail, TrendForm, TrendMeta, TrendMetaSource, TrendParams, User,
-    UserForm, UserLabel, UserLoginForm,
+    AuthClass, Label, MetaDetail, Trend, TrendDetail, TrendForm, TrendMeta, TrendMetaSource,
+    TrendParams, User, UserForm, UserLabel, UserLoginForm,
 };
 
 use rc_storage::chrono::NaiveDateTime;
@@ -219,11 +219,24 @@ pub struct TrendDetailResponse {
     pub update_at: Any<NaiveDateTime>,
     pub like_count: i32,
     pub unlike_count: i32,
+    pub meta_value: MetaDetailResponse,
+}
+
+#[derive(Enum, Debug)]
+pub enum MetaDetailResponse {
+    Null,
+}
+
+impl MetaDetailResponse {
+    pub fn from_meta_detail() -> MetaDetailResponse {
+        MetaDetailResponse::Null
+    }
 }
 
 impl TrendDetailResponse {
     pub fn from_trend(trend: TrendDetail) -> TrendDetailResponse {
         TrendDetailResponse {
+            meta_value: MetaDetailResponse::from_meta_detail(),
             id: trend.id,
             user_id: trend.user_id,
             content: trend.content,
