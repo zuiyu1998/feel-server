@@ -1,8 +1,8 @@
 use rc_entity::chrono::NaiveDateTime;
 
 use crate::{
-    prelude::{TrendForm, TrendMeta, TrendMetaSource},
-    utils::RelatedThrend,
+    prelude::TrendForm,
+    utils::{MetaHelper, RelatedThrend},
 };
 
 pub struct Article {
@@ -22,10 +22,7 @@ impl RelatedThrend for Article {
         TrendForm {
             user_id: self.user_id,
             content: "发布了一篇文章".to_owned(),
-            meta: Some(TrendMeta {
-                source: TrendMetaSource::Article,
-                source_id: self.id,
-            }),
+            meta: Some(MetaHelper::get_article_trend_meta(self.id)),
         }
     }
 }
