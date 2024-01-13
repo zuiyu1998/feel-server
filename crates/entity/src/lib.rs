@@ -2,6 +2,7 @@ pub use sea_orm;
 
 mod article;
 mod commit;
+mod follow;
 mod label;
 mod setting;
 mod trend;
