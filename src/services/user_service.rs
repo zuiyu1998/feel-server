@@ -3,9 +3,9 @@ use crate::{encryptor::Encryptor, jwt_helper::JwtHelper, state::State, ServerKin
 use rand::{thread_rng, Rng};
 use rc_entity::sea_orm::TransactionTrait;
 use rc_storage::prelude::{
-    Article, ArticleForm, ArticleStorage, Label, LabelStorage, RelatedThrend, Trend, TrendDetail,
-    TrendForm, TrendParams, TrendStorage, User, UserForm, UserFormEncrypt, UserLabel,
-    UserLoginForm, UserLoginFormEncrypt, UserStorage,
+    Article, ArticleForm, ArticleStorage, FollowStorage, Label, LabelStorage, RelatedThrend, Trend,
+    TrendDetail, TrendForm, TrendParams, TrendStorage, User, UserFollowDetailForm, UserFollowForm,
+    UserForm, UserFormEncrypt, UserLabel, UserLoginForm, UserLoginFormEncrypt, UserStorage,
 };
 
 pub struct UserService<'a> {
@@ -142,6 +142,10 @@ impl<'a> UserService<'a> {
         let storage = UserStorage::new(&beign);
 
         let user = storage.create_user(form).await?;
+
+        let follow_storage = FollowStorage::new(&beign);
+
+        let detail = follow_storage.create_user_follow(user.id).await?;
 
         beign.commit().await?;
 

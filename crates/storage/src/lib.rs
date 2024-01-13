@@ -32,5 +32,7 @@ pub mod prelude {
 
     pub use crate::article::*;
 
+    pub use crate::follow::*;
+
     pub use crate::utils::RelatedThrend;
 }
