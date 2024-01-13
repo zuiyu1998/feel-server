@@ -18,6 +18,8 @@ pub enum GenericApiResponse<T: ParseFromJSON + ToJSON + Send + Sync> {
     #[oai(status = 200)]
     Ok(Json<ResponseObject<T>>),
 }
+#[derive(Debug, Object)]
+pub struct EmptyRespone;
 
 fn inline_bad_request_handler<T: ParseFromJSON + ToJSON + Send + Sync>(
     err: Error,

@@ -4,8 +4,9 @@ use rand::{thread_rng, Rng};
 use rc_entity::sea_orm::TransactionTrait;
 use rc_storage::prelude::{
     Article, ArticleForm, ArticleStorage, FollowStorage, Label, LabelStorage, RelatedThrend, Trend,
-    TrendDetail, TrendForm, TrendParams, TrendStorage, UserDetail, UserForm, UserFormEncrypt,
-    UserLabel, UserLoginForm, UserLoginFormEncrypt, UserStorage,
+    TrendDetail, TrendForm, TrendParams, TrendStorage, UserDetail, UserFollowDetail,
+    UserFollowForm, UserForm, UserFormEncrypt, UserLabel, UserLoginForm, UserLoginFormEncrypt,
+    UserStorage,
 };
 
 pub struct UserService<'a> {
@@ -15,6 +16,17 @@ pub struct UserService<'a> {
 impl<'a> UserService<'a> {
     pub fn new(state: &'a State) -> Self {
         UserService { state }
+    }
+
+    pub async fn add_follow(&self, form: UserFollowForm) -> ServerResult<UserFollowDetail> {
+        let beign = self.state.conn.begin().await?;
+        let storage = FollowStorage::new(&beign);
+
+        let detail = storage.add_follow(form).await?;
+
+        beign.commit().await?;
+
+        Ok(detail)
     }
 
     pub async fn add_article(&self, form: ArticleForm) -> ServerResult<Article> {

@@ -5,6 +5,8 @@ use thiserror::Error;
 pub enum StorageKind {
     #[error("AuthNotFound")]
     AuthNotFound,
+    #[error("FollowDetailNotFound")]
+    FollowDetailNotFound,
     #[error("AuthExist")]
     AuthExist,
     #[error("AuthExist")]

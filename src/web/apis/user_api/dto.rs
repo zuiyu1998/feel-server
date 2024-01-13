@@ -3,12 +3,27 @@ use poem_openapi::{types::Any, Enum, Object};
 
 use rc_storage::prelude::{
     Article, ArticleForm, AuthClass, Label, MetaDetail, Trend, TrendDetail, TrendForm, TrendMeta,
-    TrendMetaSource, TrendParams, User, UserDetail, UserForm, UserLabel, UserLoginForm,
+    TrendMetaSource, TrendParams, User, UserDetail, UserFollowForm, UserForm, UserLabel,
+    UserLoginForm,
 };
 
 use rc_storage::chrono::NaiveDateTime;
 
 use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Deserialize, Object, Serialize)]
+pub struct UserFollowFormRequest {
+    follow_user_id: i32,
+}
+
+impl UserFollowFormRequest {
+    pub fn get_form(&self, user_id: i32) -> UserFollowForm {
+        UserFollowForm {
+            owner_user_id: user_id,
+            follow_user_id: self.follow_user_id,
+        }
+    }
+}
 
 #[derive(Debug, Deserialize, Object, Serialize)]
 pub struct ArticleFormRequest {

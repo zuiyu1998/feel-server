@@ -3,7 +3,9 @@ use poem_openapi::{payload::Json, OpenApi};
 
 use crate::{services::UserService, state::State, web::security::UserId};
 
-use crate::web::response::{bad_response_handler, GenericApiResponse, ResponseObject};
+use crate::web::response::{
+    bad_response_handler, EmptyRespone, GenericApiResponse, ResponseObject,
+};
 
 mod dto;
 
@@ -13,6 +15,26 @@ pub struct UserApi;
 
 #[OpenApi(tag = "super::ApiTags::UserApi")]
 impl UserApi {
+    #[oai(path = "/user/add_follow", method = "post")]
+    async fn add_follow(
+        &self,
+        state: Data<&State>,
+        user_id: UserId,
+        form: Json<UserFollowFormRequest>,
+    ) -> GenericApiResponse<EmptyRespone> {
+        let service = UserService::new(&state);
+        let form = form.get_form(user_id.0);
+
+        match service.add_follow(form).await {
+            Err(e) => {
+                return GenericApiResponse::Ok(Json(bad_response_handler(e)));
+            }
+            Ok(_) => {
+                return GenericApiResponse::Ok(Json(ResponseObject::ok(EmptyRespone)));
+            }
+        }
+    }
+
     #[oai(path = "/user/add_article", method = "post")]
     async fn add_article(
         &self,
