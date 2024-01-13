@@ -3,7 +3,7 @@ use poem_openapi::{types::Any, Enum, Object};
 
 use rc_storage::prelude::{
     Article, ArticleForm, AuthClass, Label, MetaDetail, Trend, TrendDetail, TrendForm, TrendMeta,
-    TrendMetaSource, TrendParams, User, UserForm, UserLabel, UserLoginForm,
+    TrendMetaSource, TrendParams, User, UserDetail, UserForm, UserLabel, UserLoginForm,
 };
 
 use rc_storage::chrono::NaiveDateTime;
@@ -329,6 +329,33 @@ impl UserResponse {
             avatar: user.avatar,
             create_at: Any(user.create_at),
             update_at: Any(user.update_at),
+        }
+    }
+}
+
+#[derive(Debug, Object)]
+pub struct UserDetailResponse {
+    pub id: i32,
+    pub nikename: String,
+    pub uid: String,
+    pub avatar: String,
+    pub create_at: Any<NaiveDateTime>,
+    pub update_at: Any<NaiveDateTime>,
+    pub like_count: i32,
+    pub follow_count: i32,
+}
+
+impl UserDetailResponse {
+    pub fn from_user(user: UserDetail) -> UserDetailResponse {
+        UserDetailResponse {
+            id: user.id,
+            nikename: user.nikename,
+            uid: user.uid,
+            avatar: user.avatar,
+            create_at: Any(user.create_at),
+            update_at: Any(user.update_at),
+            like_count: user.like_count,
+            follow_count: user.follow_count,
         }
     }
 }

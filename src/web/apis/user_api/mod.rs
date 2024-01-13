@@ -143,16 +143,16 @@ impl UserApi {
         &self,
         state: Data<&State>,
         user_id: UserId,
-    ) -> GenericApiResponse<UserResponse> {
+    ) -> GenericApiResponse<UserDetailResponse> {
         let service = UserService::new(&state);
         match service.get_user_info(user_id.0).await {
             Err(e) => {
                 return GenericApiResponse::Ok(Json(bad_response_handler(e)));
             }
             Ok(user) => {
-                return GenericApiResponse::Ok(Json(ResponseObject::ok(UserResponse::from_user(
-                    user,
-                ))));
+                return GenericApiResponse::Ok(Json(ResponseObject::ok(
+                    UserDetailResponse::from_user(user),
+                )));
             }
         }
     }
@@ -194,7 +194,7 @@ impl UserApi {
         &self,
         state: Data<&State>,
         form: Json<UserFormRequest>,
-    ) -> GenericApiResponse<UserResponse> {
+    ) -> GenericApiResponse<UserDetailResponse> {
         let form = form.get_user_form();
         let service = UserService::new(&state);
         match service.create_user(form).await {
@@ -202,9 +202,9 @@ impl UserApi {
                 return GenericApiResponse::Ok(Json(bad_response_handler(e)));
             }
             Ok(user) => {
-                return GenericApiResponse::Ok(Json(ResponseObject::ok(UserResponse::from_user(
-                    user,
-                ))));
+                return GenericApiResponse::Ok(Json(ResponseObject::ok(
+                    UserDetailResponse::from_user(user),
+                )));
             }
         }
     }

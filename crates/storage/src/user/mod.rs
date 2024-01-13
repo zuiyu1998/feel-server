@@ -1,5 +1,6 @@
 use rc_entity::sea_orm::{
-    ActiveModelTrait, ColumnTrait, ConnectionTrait, EntityTrait, QueryFilter, Set,
+    ActiveModelTrait, ColumnTrait, ConnectionTrait, EntityTrait, FromQueryResult, QueryFilter, Set,
+    Statement,
 };
 
 use rc_entity::prelude::{
@@ -11,7 +12,7 @@ mod dto;
 
 pub use dto::*;
 
-use crate::{StorageKind, StorageResult};
+use crate::{StorageKind, StorageResult, DATABASEBACKEND};
 
 pub struct UserStorage<'a, C> {
     conn: &'a C,
@@ -22,8 +23,27 @@ impl<'a, C: ConnectionTrait> UserStorage<'a, C> {
         UserStorage { conn }
     }
 
-    pub async fn find(&self, user_id: i32) -> StorageResult<User> {
-        let user = UserBaseEntity::find_by_id(user_id).one(self.conn).await?;
+    pub async fn find(&self, user_id: i32) -> StorageResult<UserDetail> {
+        let stmt = Statement::from_sql_and_values(
+            DATABASEBACKEND,
+            r#"
+            select
+            pub.id as id,
+            pub.nikename as nikename,
+            pub.uid as uid,
+            pub.avatar as avatar,
+            pub.create_at as create_at,
+            pub.update_at as update_at,
+            pufd.like_count as like_count,
+            pufd.follow_count as follow_count
+            from pb_user_base pub 
+            join pb_user_follow_detail pufd on pufd.user_id = pub.id
+            where user_id = $1
+        "#,
+            vec![user_id.into()],
+        );
+
+        let user = UserDetail::find_by_statement(stmt).one(self.conn).await?;
 
         if user.is_none() {
             return Err(StorageKind::UserNotFound.into());
@@ -31,7 +51,7 @@ impl<'a, C: ConnectionTrait> UserStorage<'a, C> {
 
         let user = user.unwrap();
 
-        Ok(User::from(user))
+        Ok(user)
     }
 
     pub async fn login(&self, form: UserLoginFormEncrypt) -> StorageResult<User> {

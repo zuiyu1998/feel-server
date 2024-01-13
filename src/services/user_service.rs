@@ -4,8 +4,8 @@ use rand::{thread_rng, Rng};
 use rc_entity::sea_orm::TransactionTrait;
 use rc_storage::prelude::{
     Article, ArticleForm, ArticleStorage, FollowStorage, Label, LabelStorage, RelatedThrend, Trend,
-    TrendDetail, TrendForm, TrendParams, TrendStorage, User, UserFollowDetailForm, UserFollowForm,
-    UserForm, UserFormEncrypt, UserLabel, UserLoginForm, UserLoginFormEncrypt, UserStorage,
+    TrendDetail, TrendForm, TrendParams, TrendStorage, UserDetail, UserForm, UserFormEncrypt,
+    UserLabel, UserLoginForm, UserLoginFormEncrypt, UserStorage,
 };
 
 pub struct UserService<'a> {
@@ -74,7 +74,7 @@ impl<'a> UserService<'a> {
         Ok(labels)
     }
 
-    pub async fn get_user_info(&self, user_id: i32) -> ServerResult<User> {
+    pub async fn get_user_info(&self, user_id: i32) -> ServerResult<UserDetail> {
         let beign = self.state.conn.begin().await?;
 
         let storage = UserStorage::new(&beign);
@@ -128,7 +128,7 @@ impl<'a> UserService<'a> {
         }
     }
 
-    pub async fn create_user(&self, form: UserForm) -> ServerResult<User> {
+    pub async fn create_user(&self, form: UserForm) -> ServerResult<UserDetail> {
         let encryptor = Encryptor::new(self.state.config.encrypt.secure.as_bytes());
 
         let uid = xid::new().to_string();
@@ -145,10 +145,10 @@ impl<'a> UserService<'a> {
 
         let follow_storage = FollowStorage::new(&beign);
 
-        let detail = follow_storage.create_user_follow(user.id).await?;
+        let follow = follow_storage.create_user_follow(user.id).await?;
 
         beign.commit().await?;
 
-        Ok(user)
+        Ok(UserDetail::new(user, follow))
     }
 }

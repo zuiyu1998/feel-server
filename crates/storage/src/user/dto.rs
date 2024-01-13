@@ -1,9 +1,47 @@
 use rc_entity::{
     chrono::NaiveDateTime,
     prelude::{get_now, UserAuthActiveModel, UserAuthClass, UserBaseActiveModel, UserBaseModel},
-    sea_orm::Set,
+    sea_orm::{self, FromQueryResult, Set},
 };
 use serde::{Deserialize, Serialize};
+
+use crate::follow::UserFollowDetail;
+
+#[derive(Debug, FromQueryResult)]
+pub struct UserDetail {
+    pub id: i32,
+    pub nikename: String,
+    pub uid: String,
+    pub avatar: String,
+    pub create_at: NaiveDateTime,
+    pub update_at: NaiveDateTime,
+    pub like_count: i32,
+    pub follow_count: i32,
+}
+
+impl UserDetail {
+    pub fn new(user: User, follow: UserFollowDetail) -> Self {
+        let User {
+            id,
+            nikename,
+            uid,
+            avatar,
+            create_at,
+            update_at,
+        } = user;
+
+        UserDetail {
+            id,
+            nikename,
+            uid,
+            avatar,
+            create_at,
+            update_at,
+            like_count: follow.like_count,
+            follow_count: follow.like_count,
+        }
+    }
+}
 
 #[derive(Debug, Default)]
 pub struct UserBaseOption {
