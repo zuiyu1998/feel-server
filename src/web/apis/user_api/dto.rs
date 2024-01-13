@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Deserialize, Object, Serialize)]
 pub struct ArticleFormRequest {
     pub title: String,
-    pub background: String,
+    pub cover: String,
     pub content: String,
 }
 
@@ -22,7 +22,7 @@ impl ArticleFormRequest {
         ArticleForm {
             user_id,
             title: self.title.clone(),
-            background: self.background.clone(),
+            cover: self.cover.clone(),
             content: self.content.clone(),
         }
     }
@@ -33,7 +33,7 @@ pub struct ArticleResponse {
     pub id: i32,
     pub user_id: i32,
     pub title: String,
-    pub background: String,
+    pub cover: String,
     pub content: String,
     pub create_at: Any<NaiveDateTime>,
     pub update_at: Any<NaiveDateTime>,
@@ -52,7 +52,7 @@ impl ArticleResponse {
             create_at: Any(article.create_at),
             update_at: Any(article.update_at),
             title: article.title,
-            background: article.background,
+            cover: article.cover,
         }
     }
 }

@@ -9,7 +9,7 @@ pub struct Model {
     pub user_id: i32,
     pub content: String,
     pub title: String,
-    pub background: String,
+    pub cover: String,
     pub create_at: ChronoDateTime,
     pub update_at: ChronoDateTime,
     pub is_delete: bool,

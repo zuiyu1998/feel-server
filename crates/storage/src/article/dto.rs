@@ -9,7 +9,7 @@ use crate::{
 pub struct ArticleForm {
     pub user_id: i32,
     pub title: String,
-    pub background: String,
+    pub cover: String,
     pub content: String,
 }
 
@@ -20,7 +20,7 @@ impl ArticleForm {
         let now = get_now();
         active.user_id = Set(self.user_id);
         active.title = Set(self.title.clone());
-        active.background = Set(self.background.clone());
+        active.cover = Set(self.cover.clone());
         active.content = Set(self.content.clone());
         active.create_at = Set(now.clone());
         active.update_at = Set(now.clone());
@@ -36,7 +36,7 @@ pub struct Article {
     pub id: i32,
     pub user_id: i32,
     pub title: String,
-    pub background: String,
+    pub cover: String,
     pub content: String,
     pub create_at: NaiveDateTime,
     pub update_at: NaiveDateTime,
@@ -51,7 +51,7 @@ impl From<ArticleModel> for Article {
             user_id,
             content,
             title,
-            background,
+            cover,
             create_at,
             update_at,
             like_count,
@@ -63,7 +63,7 @@ impl From<ArticleModel> for Article {
             id,
             user_id,
             title,
-            background,
+            cover,
             content,
             create_at,
             update_at,
