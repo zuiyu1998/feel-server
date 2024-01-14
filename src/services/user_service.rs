@@ -156,8 +156,10 @@ impl<'a> UserService<'a> {
         let user = storage.create_user(form).await?;
 
         let follow_storage = FollowStorage::new(&beign);
-
         let follow = follow_storage.create_user_follow(user.id).await?;
+
+        let trend_storage = TrendStorage::new(&beign);
+        trend_storage.create_trend_update(user.id).await?;
 
         beign.commit().await?;
 

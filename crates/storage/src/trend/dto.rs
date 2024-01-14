@@ -1,5 +1,7 @@
 use rc_entity::chrono::NaiveDateTime;
-use rc_entity::prelude::{get_now, TrendActiveModel, TrendEntityMetaSource, TrendModel};
+use rc_entity::prelude::{
+    get_now, TrendActiveModel, TrendEntityMetaSource, TrendModel, TrendUpdateActiveModel,
+};
 use rc_entity::sea_orm::Set;
 
 use crate::commit::CommitMeta;
@@ -8,6 +10,22 @@ use crate::utils::MetaHelper;
 
 pub enum MetaDetail {
     Article(Article),
+}
+
+pub struct TrendUpdateForm {
+    pub user_id: i32,
+}
+
+impl TrendUpdateForm {
+    pub fn get_trend_update_active_model(&self) -> TrendUpdateActiveModel {
+        let mut active: TrendUpdateActiveModel = Default::default();
+
+        let now = get_now();
+        active.user_id = Set(self.user_id);
+        active.update_at = Set(now);
+
+        active
+    }
 }
 
 pub struct TrendDetail {

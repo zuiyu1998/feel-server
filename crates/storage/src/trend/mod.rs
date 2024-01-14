@@ -19,6 +19,25 @@ impl<'a, C: ConnectionTrait> TrendStorage<'a, C> {
         TrendStorage { conn }
     }
 
+    pub async fn trend_update(&self, user_id: i32) -> StorageResult<()> {
+        let form = TrendUpdateForm { user_id };
+        let active = form.get_trend_update_active_model();
+
+        active.update(self.conn).await?;
+
+        Ok(())
+    }
+
+    pub async fn create_trend_update(&self, user_id: i32) -> StorageResult<()> {
+        let form = TrendUpdateForm { user_id };
+
+        let active = form.get_trend_update_active_model();
+
+        active.insert(self.conn).await?;
+
+        Ok(())
+    }
+
     pub async fn get_list(&self, params: TrendParams) -> StorageResult<Vec<TrendDetail>> {
         let mut sql = TrendEntity::find();
 
@@ -44,6 +63,8 @@ impl<'a, C: ConnectionTrait> TrendStorage<'a, C> {
         let active = form.get_trend_active_model();
 
         let model = active.insert(self.conn).await?;
+
+        self.trend_update(model.user_id).await?;
 
         Ok(Trend::from(model))
     }

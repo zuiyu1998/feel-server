@@ -22,6 +22,7 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(TrendUpdateColumn::UserId)
                             .integer()
+                            .unique_key()
                             .not_null(),
                     )
                     .col(
