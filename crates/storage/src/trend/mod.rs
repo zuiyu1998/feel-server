@@ -1,6 +1,7 @@
-use rc_entity::prelude::{TrendColumn, TrendEntity};
+use rc_entity::prelude::{TrendColumn, TrendEntity, TrendModel};
 use rc_entity::sea_orm::{
-    ActiveModelTrait, ColumnTrait, ConnectionTrait, EntityTrait, PaginatorTrait, QueryFilter,
+    ActiveModelTrait, ColumnTrait, ConnectionTrait, EntityTrait, FromQueryResult, PaginatorTrait,
+    QueryFilter, Statement,
 };
 
 mod dto;
@@ -8,7 +9,7 @@ mod dto;
 pub use dto::*;
 
 use crate::utils::MetaHelper;
-use crate::StorageResult;
+use crate::{StorageResult, DATABASEBACKEND};
 
 pub struct TrendStorage<'a, C> {
     conn: &'a C,
@@ -36,6 +37,45 @@ impl<'a, C: ConnectionTrait> TrendStorage<'a, C> {
         active.insert(self.conn).await?;
 
         Ok(())
+    }
+
+    pub async fn get_follow_list(&self, params: TrendParams) -> StorageResult<Vec<TrendDetail>> {
+        let stmt = Statement::from_sql_and_values(
+            DATABASEBACKEND,
+            r#"
+            select
+            pt.id as id,
+            pt.user_id as user_id,
+            pt."content" as "content",
+            pt.meta_source as meta_source,
+            pt.meta_soure_id as meta_source_id,
+            pt.create_at as create_at,
+            pt.update_at as update_at,
+            pt.like_count as like_count,
+            pt.unlike_count as unlike_count,
+            from pb_user_follow puf
+            left join pb_user_trend_update putu on putu.user_id = puf.owner_user_id 
+            left join pb_trend pt on pt.user_id = puf.owner_user_id
+            where pb_trend = $1
+            order pt.create_at asc
+        "#,
+            vec![params.user_id.unwrap().into()],
+        );
+
+        let sql = TrendModel::find_by_statement(stmt);
+
+        let paginate = sql.paginate(self.conn, params.page_size);
+
+        let trends = paginate
+            .fetch_page(params.page)
+            .await?
+            .into_iter()
+            .map(|item| Trend::from(item))
+            .collect::<Vec<Trend>>();
+
+        let trend_details = MetaHelper::update_trends(self.conn, trends).await?;
+
+        Ok(trend_details)
     }
 
     pub async fn get_list(&self, params: TrendParams) -> StorageResult<Vec<TrendDetail>> {
