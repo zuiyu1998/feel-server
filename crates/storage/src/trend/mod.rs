@@ -40,6 +40,8 @@ impl<'a, C: ConnectionTrait> TrendStorage<'a, C> {
     }
 
     pub async fn get_follow_list(&self, params: TrendParams) -> StorageResult<Vec<TrendDetail>> {
+        let user_id = params.user_id.clone();
+
         let stmt = Statement::from_sql_and_values(
             DATABASEBACKEND,
             r#"
@@ -59,7 +61,7 @@ impl<'a, C: ConnectionTrait> TrendStorage<'a, C> {
             where pb_trend = $1
             order pt.create_at asc
         "#,
-            vec![params.user_id.unwrap().into()],
+            vec![user_id.unwrap().into()],
         );
 
         let sql = TrendModel::find_by_statement(stmt);

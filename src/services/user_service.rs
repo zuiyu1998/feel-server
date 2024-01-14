@@ -45,6 +45,18 @@ impl<'a> UserService<'a> {
         Ok(article)
     }
 
+    pub async fn get_follow_trend_list(
+        &self,
+        params: TrendParams,
+    ) -> ServerResult<Vec<TrendDetail>> {
+        let beign = self.state.conn.begin().await?;
+        let storage = TrendStorage::new(&beign);
+        let trends = storage.get_list(params).await?;
+        beign.commit().await?;
+
+        Ok(trends)
+    }
+
     pub async fn get_trend_list(&self, params: TrendParams) -> ServerResult<Vec<TrendDetail>> {
         let beign = self.state.conn.begin().await?;
         let storage = TrendStorage::new(&beign);

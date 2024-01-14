@@ -57,6 +57,45 @@ impl UserApi {
         }
     }
 
+    #[oai(path = "/user/get_follow_trend_list", method = "post")]
+    async fn get_follow_trend_list(
+        &self,
+        state: Data<&State>,
+        user_id: UserId,
+        params: Json<TrendParamsRequest>,
+    ) -> GenericApiResponse<TrendListResponse> {
+        let service = UserService::new(&state);
+        let params = params.get_params(user_id.0);
+
+        let page_size = params.page_size;
+        let page = params.page;
+
+        match service.get_follow_trend_list(params).await {
+            Err(e) => {
+                return GenericApiResponse::Ok(Json(bad_response_handler(e)));
+            }
+            Ok(trends) => {
+                let mut has_next = true;
+
+                if trends.len() < page_size as usize {
+                    has_next = false;
+                }
+
+                let res = TrendListResponse {
+                    has_next,
+                    data: trends
+                        .into_iter()
+                        .map(|trend| TrendDetailResponse::from_trend(trend))
+                        .collect::<Vec<TrendDetailResponse>>(),
+                    page: page_size,
+                    page_size: page,
+                };
+
+                return GenericApiResponse::Ok(Json(ResponseObject::ok(res)));
+            }
+        }
+    }
+
     #[oai(path = "/user/get_trend_list", method = "post")]
     async fn get_trend_list(
         &self,
