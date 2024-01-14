@@ -50,16 +50,17 @@ impl<'a, C: ConnectionTrait> TrendStorage<'a, C> {
             pt.user_id as user_id,
             pt."content" as "content",
             pt.meta_source as meta_source,
-            pt.meta_soure_id as meta_source_id,
+            pt.meta_soure_id as meta_soure_id,
             pt.create_at as create_at,
             pt.update_at as update_at,
             pt.like_count as like_count,
             pt.unlike_count as unlike_count,
+            pt.is_delete as is_delete,
+            pt.is_enable as is_enable
             from pb_user_follow puf
             left join pb_user_trend_update putu on putu.user_id = puf.owner_user_id 
-            left join pb_trend pt on pt.user_id = puf.owner_user_id
-            where pb_trend = $1
-            order pt.create_at asc
+            inner join pb_trend pt on pt.user_id  = puf.follow_user_id 
+            where puf.owner_user_id  = $1
         "#,
             vec![user_id.unwrap().into()],
         );
@@ -74,6 +75,8 @@ impl<'a, C: ConnectionTrait> TrendStorage<'a, C> {
             .into_iter()
             .map(|item| Trend::from(item))
             .collect::<Vec<Trend>>();
+
+        tracing::error!("len:{}", trends.len());
 
         let trend_details = MetaHelper::update_trends(self.conn, trends).await?;
 

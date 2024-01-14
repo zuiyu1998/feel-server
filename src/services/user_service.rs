@@ -51,7 +51,7 @@ impl<'a> UserService<'a> {
     ) -> ServerResult<Vec<TrendDetail>> {
         let beign = self.state.conn.begin().await?;
         let storage = TrendStorage::new(&beign);
-        let trends = storage.get_list(params).await?;
+        let trends = storage.get_follow_list(params).await?;
         beign.commit().await?;
 
         Ok(trends)
