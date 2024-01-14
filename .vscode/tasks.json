@@ -9,9 +9,9 @@
       "command": "cargo run --bin web"
     },
     {
-      "label": "migration up",
+      "label": "migration down",
       "type": "shell",
-      "command": "cd ./crates/migration | cargo run --up"
+      "command": "cd ./crates/migration | cargo run -- down"
     }
   ]
 }
