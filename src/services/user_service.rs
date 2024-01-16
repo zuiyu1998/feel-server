@@ -1,4 +1,4 @@
-use crate::{encryptor::Encryptor, jwt_helper::JwtHelper, state::State, ServerKind, ServerResult};
+use crate::{encryptor::Encryptor, helper::JwtHelper, state::State, ServerKind, ServerResult};
 
 use rand::{thread_rng, Rng};
 use rc_entity::sea_orm::TransactionTrait;

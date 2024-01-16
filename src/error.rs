@@ -4,7 +4,7 @@ use rc_storage::StorageError;
 use std::io::Error as IoError;
 use thiserror::Error;
 
-use crate::jwt_helper::JwtKind;
+use crate::helper::JwtKind;
 
 #[derive(Debug, Error)]
 

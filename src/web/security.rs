@@ -1,7 +1,7 @@
 use poem::Request;
 use poem_openapi::{auth::Bearer, SecurityScheme};
 
-use crate::{jwt_helper::JwtHelper, state::State};
+use crate::{helper::JwtHelper, state::State};
 
 #[derive(SecurityScheme)]
 #[oai(

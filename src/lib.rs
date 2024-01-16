@@ -1,7 +1,7 @@
 mod config;
 mod encryptor;
 mod error;
-mod jwt_helper;
+mod helper;
 mod services;
 mod state;
 

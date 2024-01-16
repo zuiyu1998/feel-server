@@ -10,6 +10,7 @@ use poem_openapi::OpenApiService;
 use tracing::Level;
 
 mod apis;
+mod middleware;
 mod response;
 
 pub mod security;
