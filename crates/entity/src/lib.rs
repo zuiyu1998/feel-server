@@ -18,6 +18,7 @@ pub mod prelude {
     pub use crate::commit::*;
     pub use crate::follow::*;
     pub use crate::label::*;
+    pub use crate::permission::*;
     pub use crate::setting::*;
     pub use crate::trend::*;
     pub use crate::user::*;
