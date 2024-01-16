@@ -1,4 +1,5 @@
 mod permission;
+mod role;
 
 pub use permission::{
     ActiveModel as PermissionActiveModel, Column as PermissionColumn, Entity as PermissionEntity,
