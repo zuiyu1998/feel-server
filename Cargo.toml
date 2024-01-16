@@ -40,3 +40,4 @@ hmac = { version = "0.12" }
 jwt = { version = "0.16" }
 
 xid = { version = "1.0" }
+radix-tree = "0.2.0"
