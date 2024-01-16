@@ -13,6 +13,7 @@ mod m20240113_072006_create_user_follow;
 mod m20240114_123041_create_user_trend_update;
 mod m20240116_054141_create_permission;
 mod m20240116_055748_create_role;
+mod m20240116_060328_create_user_role;
 
 pub struct Migrator;
 
@@ -33,6 +34,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20240114_123041_create_user_trend_update::Migration),
             Box::new(m20240116_054141_create_permission::Migration),
             Box::new(m20240116_055748_create_role::Migration),
+            Box::new(m20240116_060328_create_user_role::Migration),
         ]
     }
 }
