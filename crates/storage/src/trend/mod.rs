@@ -76,8 +76,6 @@ impl<'a, C: ConnectionTrait> TrendStorage<'a, C> {
             .map(|item| Trend::from(item))
             .collect::<Vec<Trend>>();
 
-        tracing::error!("len:{}", trends.len());
-
         let trend_details = MetaHelper::update_trends(self.conn, trends).await?;
 
         Ok(trend_details)

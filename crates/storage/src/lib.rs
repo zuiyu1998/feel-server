@@ -7,6 +7,7 @@ mod article;
 mod commit;
 mod follow;
 mod label;
+mod permission;
 mod setting;
 mod trend;
 
