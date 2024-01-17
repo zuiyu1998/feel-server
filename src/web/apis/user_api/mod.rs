@@ -3,6 +3,8 @@ use poem_openapi::{payload::Json, OpenApi};
 
 use crate::{services::UserService, state::State, web::security::UserId};
 
+use super::common_middleware;
+
 use crate::web::response::{
     bad_response_handler, EmptyRespone, GenericApiResponse, ResponseObject,
 };
@@ -199,7 +201,11 @@ impl UserApi {
         }
     }
 
-    #[oai(path = "/user/get_user_info", method = "get")]
+    #[oai(
+        path = "/user/get_user_info",
+        method = "get",
+        transform = "common_middleware"
+    )]
     async fn get_user_info(
         &self,
         state: Data<&State>,
