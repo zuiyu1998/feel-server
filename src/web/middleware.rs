@@ -7,8 +7,15 @@ use poem::{
 use std::result::Result as StdResult;
 use thiserror::Error;
 
+use crate::helper::JwtHelper;
+
 #[derive(Debug, Error)]
-pub enum MiddlewareKind {}
+pub enum MiddlewareKind {
+    #[error("HeaderValueNotFound")]
+    HeaderValueNotFound,
+    #[error("HeaderValueInvaild")]
+    HeaderValueInvaild,
+}
 
 impl ResponseError for MiddlewareKind {
     fn status(&self) -> poem::http::StatusCode {
@@ -40,8 +47,31 @@ impl<E: Endpoint> Middleware<E> for PermissionMiddleware {
 }
 
 impl PermissionMiddleware {
-    pub fn get_user_id(&self, _req: &Request) -> StdResult<i32, MiddlewareKind> {
-        return Ok(1);
+    pub fn get_user_id(&self, req: &Request) -> StdResult<i32, MiddlewareKind> {
+        let header_value = req
+            .header(&self.header_name)
+            .ok_or(MiddlewareKind::HeaderValueNotFound)?;
+
+        let mut split_n = header_value.splitn(2, " ");
+        split_n.next();
+
+        if let Some(token) = split_n.next() {
+            let helper = req.extensions().get::<JwtHelper>();
+
+            if let Some(helper) = helper {
+                let user_id = helper
+                    .decode(token)
+                    .map_err(|_| MiddlewareKind::HeaderValueInvaild)?
+                    .parse::<i32>()
+                    .map_err(|_| MiddlewareKind::HeaderValueInvaild)?;
+
+                return Ok(user_id);
+            } else {
+                return Err(MiddlewareKind::HeaderValueInvaild);
+            }
+        } else {
+            return Err(MiddlewareKind::HeaderValueInvaild);
+        }
     }
 }
 

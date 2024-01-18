@@ -23,6 +23,7 @@ pub async fn start_web() -> ServerResult<()> {
     tracing_subscriber::fmt::fmt()
         .with_max_level(Level::INFO)
         .init();
+    let state = state::initialize(&config).await?;
 
     let api_service = OpenApiService::new(
         apis::create_apis(),
@@ -34,8 +35,6 @@ pub async fn start_web() -> ServerResult<()> {
     tracing::info!("swagger_ui url : {}", config.server.get_swigger_url());
 
     let ui = api_service.swagger_ui();
-
-    let state = state::initialize(&config).await?;
 
     let app = Route::new()
         .nest("/api", api_service)
