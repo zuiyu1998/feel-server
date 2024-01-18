@@ -1,4 +1,4 @@
-use poem::Error;
+use poem::{Body, Error, Response};
 use poem_openapi::{
     error::ParseRequestPayloadError,
     payload::Json,
@@ -11,6 +11,8 @@ const INVALID_REQUEST_CODE: i32 = 400;
 const UNKNOWN_CODE: i32 = 415;
 
 use crate::ServerError;
+
+use super::middleware::MiddlewareKind;
 
 #[derive(ApiResponse)]
 #[oai(bad_request_handler = "inline_bad_request_handler")]
@@ -59,6 +61,35 @@ pub fn bad_request_handler<T: ParseFromJSON + ToJSON + Send + Sync>(
             msg: err.to_string(),
             data: None,
         }
+    }
+}
+
+pub fn bad_middleware_response(err: MiddlewareKind) -> Response {
+    let object = bad_middleware_response_handler::<EmptyRespone>(err);
+    let json = object.to_json().unwrap();
+
+    let body = Body::from_json(json).unwrap();
+
+    Response::from(body)
+}
+
+pub fn bad_middleware_response_handler<T: ParseFromJSON + ToJSON + Send + Sync>(
+    err: MiddlewareKind,
+) -> ResponseObject<T> {
+    let code: i32;
+    let msg: String;
+
+    match err {
+        _ => {
+            code = OK_CODE;
+            msg = err.to_string()
+        }
+    }
+
+    ResponseObject {
+        code,
+        msg,
+        data: None,
     }
 }
 

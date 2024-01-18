@@ -10,6 +10,8 @@ use poem::{listener::TcpListener, middleware::Tracing, Endpoint, EndpointExt, Ro
 use poem_openapi::OpenApiService;
 use tracing::Level;
 
+use self::{middleware::MiddlewareKind, response::bad_middleware_response};
+
 mod apis;
 mod middleware;
 mod response;
@@ -20,7 +22,10 @@ pub fn build_app(app: impl Endpoint, config: &Arc<Config>) -> impl Endpoint {
     let jwt_helper = JwtHelper::from_config(&config.jwt);
     let encrypt_helper = EncryptHelper::new(config.encrypt.secure.as_bytes());
 
-    app.with(Tracing).data(jwt_helper).data(encrypt_helper)
+    app.with(Tracing)
+        .data(jwt_helper)
+        .data(encrypt_helper)
+        .catch_error(|e: MiddlewareKind| async move { bad_middleware_response(e) })
 }
 
 pub async fn start_web() -> ServerResult<()> {
