@@ -9,6 +9,14 @@ pub struct Permission {
     pub update_at: NaiveDateTime,
 }
 
+pub struct UrlPermission {
+    pub id: i32,
+    pub name: String,
+    pub create_at: NaiveDateTime,
+    pub update_at: NaiveDateTime,
+    pub url: String,
+}
+
 impl PartialEq<&str> for Permission {
     fn eq(&self, other: &&str) -> bool {
         if self.name == **other {
