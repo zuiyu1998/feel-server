@@ -1,7 +1,12 @@
 use poem::web::Data;
 use poem_openapi::{payload::Json, OpenApi};
 
-use crate::{services::UserService, state::State, web::security::UserId};
+use crate::{
+    helper::{EncryptHelper, JwtHelper},
+    services::UserService,
+    state::State,
+    web::security::UserId,
+};
 
 use super::common_middleware;
 
@@ -229,11 +234,13 @@ impl UserApi {
         &self,
         form: Json<UserLoginFormRequest>,
         state: Data<&State>,
+        encrypt_helper: Data<&EncryptHelper>,
+        jwt_helper: Data<&JwtHelper>,
     ) -> GenericApiResponse<String> {
         let form = form.get_user_form();
 
         let service = UserService::new(&state);
-        match service.login(form).await {
+        match service.login(&encrypt_helper, &jwt_helper, form).await {
             Err(e) => {
                 return GenericApiResponse::Ok(Json(bad_response_handler(e)));
             }
@@ -261,10 +268,11 @@ impl UserApi {
         &self,
         state: Data<&State>,
         form: Json<UserFormRequest>,
+        encrypt_helper: Data<&EncryptHelper>,
     ) -> GenericApiResponse<UserDetailResponse> {
         let form = form.get_user_form();
         let service = UserService::new(&state);
-        match service.create_user(form).await {
+        match service.create_user(&encrypt_helper, form).await {
             Err(e) => {
                 return GenericApiResponse::Ok(Json(bad_response_handler(e)));
             }

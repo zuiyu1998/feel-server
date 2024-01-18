@@ -1,10 +1,11 @@
 use sha2::{Digest, Sha256};
 
-pub struct Encryptor {
+#[derive(Clone)]
+pub struct EncryptHelper {
     secure: Vec<u8>,
 }
 
-impl Encryptor {
+impl EncryptHelper {
     pub fn new(secure: &[u8]) -> Self {
         Self {
             secure: secure.to_vec(),

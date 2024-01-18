@@ -1,4 +1,8 @@
-use crate::{encryptor::Encryptor, helper::JwtHelper, state::State, ServerKind, ServerResult};
+use crate::{
+    helper::{EncryptHelper, JwtHelper},
+    state::State,
+    ServerKind, ServerResult,
+};
 
 use rand::{thread_rng, Rng};
 use rc_entity::sea_orm::TransactionTrait;
@@ -110,9 +114,13 @@ impl<'a> UserService<'a> {
         Ok(user)
     }
 
-    pub async fn login(&self, form: UserLoginForm) -> ServerResult<String> {
-        let encryptor = Encryptor::new(self.state.config.encrypt.secure.as_bytes());
-        let encrypt_data = encryptor.encode(&form.auth_data);
+    pub async fn login(
+        &self,
+        encrypt_helper: &EncryptHelper,
+        jwt_helper: &JwtHelper,
+        form: UserLoginForm,
+    ) -> ServerResult<String> {
+        let encrypt_data = encrypt_helper.encode(&form.auth_data);
 
         let form = UserLoginFormEncrypt::from_form(form, encrypt_data);
         let beign = self.state.conn.begin().await?;
@@ -122,8 +130,6 @@ impl<'a> UserService<'a> {
         let user = storage.login(form).await?;
 
         beign.commit().await?;
-
-        let jwt_helper = JwtHelper::from_config(&self.state.config.jwt);
 
         let token = jwt_helper.encode(&user.id.to_string())?;
 
@@ -152,12 +158,14 @@ impl<'a> UserService<'a> {
         }
     }
 
-    pub async fn create_user(&self, form: UserForm) -> ServerResult<UserDetail> {
-        let encryptor = Encryptor::new(self.state.config.encrypt.secure.as_bytes());
-
+    pub async fn create_user(
+        &self,
+        encrypt_helper: &EncryptHelper,
+        form: UserForm,
+    ) -> ServerResult<UserDetail> {
         let uid = xid::new().to_string();
 
-        let encrypt_data = encryptor.encode(&form.auth_data);
+        let encrypt_data = encrypt_helper.encode(&form.auth_data);
 
         let form = UserFormEncrypt::from_form(form, encrypt_data, &uid);
 

@@ -1,5 +1,4 @@
 mod config;
-mod encryptor;
 mod error;
 mod helper;
 mod services;
