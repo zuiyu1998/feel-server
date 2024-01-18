@@ -11,7 +11,7 @@ pub struct Permission {
 
 pub struct UrlPermission {
     pub id: i32,
-    pub name: String,
+    pub permisssion_id: i32,
     pub create_at: NaiveDateTime,
     pub update_at: NaiveDateTime,
     pub url: String,

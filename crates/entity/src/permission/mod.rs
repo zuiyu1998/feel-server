@@ -1,6 +1,7 @@
 mod permission;
 mod role;
 mod role_permission;
+mod url_permission;
 mod user_role;
 
 pub use permission::{
@@ -20,4 +21,9 @@ pub use user_role::{
 pub use role_permission::{
     ActiveModel as RolePermissionActiveModel, Column as RolePermissionColumn,
     Entity as RolePermissionEntity, Model as RolePermissionModel,
+};
+
+pub use url_permission::{
+    ActiveModel as UrlPermissionActiveModel, Column as UrlPermissionColumn,
+    Entity as UrlPermissionEntity, Model as UrlPermissionModel,
 };
