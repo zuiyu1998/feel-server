@@ -1,12 +1,15 @@
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
-use crate::{
-    services::{PermissionsManager, ProjectSetting},
-    Config, ServerResult,
-};
+use crate::{Config, ServerResult};
 use migration::{Migrator, MigratorTrait};
 use rc_entity::sea_orm::{Database, DatabaseConnection};
+
+mod permissions;
+mod project_setting;
+
+pub use permissions::*;
+pub use project_setting::*;
 
 #[derive(Clone)]
 pub struct State {

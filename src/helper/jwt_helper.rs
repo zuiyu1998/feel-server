@@ -15,16 +15,19 @@ pub enum JwtKind {
     MissingSubject,
 }
 
+#[derive(Clone)]
 pub struct JwtHelper {
     issuer: String,
-    secret: String,
+    key: Hmac<Sha256>,
 }
 
 impl JwtHelper {
     pub fn from_config(config: &JwtConfig) -> Self {
+        let key: Hmac<Sha256> = Hmac::new_from_slice(config.secret.as_bytes()).unwrap();
+
         JwtHelper {
             issuer: config.issuer.clone(),
-            secret: config.secret.clone(),
+            key,
         }
     }
 
@@ -35,21 +38,16 @@ impl JwtHelper {
             ..Default::default()
         };
 
-        let key: Hmac<Sha256> =
-            Hmac::new_from_slice(self.secret.as_bytes()).map_err(|_e| JwtKind::InvalidKey)?;
-
         let signed_token = claims
-            .sign_with_key(&key)
+            .sign_with_key(&self.key)
             .map_err(|_e| JwtKind::SignFailed)?;
 
         Ok(signed_token)
     }
 
     pub fn decode(&self, token: &str) -> Result<String, JwtKind> {
-        let key: Hmac<Sha256> =
-            Hmac::new_from_slice(self.secret.as_bytes()).map_err(|_e| JwtKind::InvalidKey)?;
         let claims: RegisteredClaims =
-            VerifyWithKey::verify_with_key(token, &key).map_err(|_e| JwtKind::SignFailed)?;
+            VerifyWithKey::verify_with_key(token, &self.key).map_err(|_e| JwtKind::SignFailed)?;
 
         claims.subject.ok_or(JwtKind::MissingSubject)
     }

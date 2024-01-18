@@ -2,10 +2,11 @@ use std::sync::Arc;
 
 use crate::{
     config::load_config,
+    helper::JwtHelper,
     state::{self},
     Config, ServerResult,
 };
-use poem::{listener::TcpListener, middleware::Tracing, EndpointExt, Route, Server};
+use poem::{listener::TcpListener, middleware::Tracing, Endpoint, EndpointExt, Route, Server};
 use poem_openapi::OpenApiService;
 use tracing::Level;
 
@@ -15,6 +16,12 @@ mod response;
 
 pub mod security;
 
+pub fn build_app(app: impl Endpoint, config: &Arc<Config>) -> impl Endpoint {
+    let jwt_helper = JwtHelper::from_config(&config.jwt);
+
+    app.with(Tracing).data(jwt_helper)
+}
+
 pub async fn start_web() -> ServerResult<()> {
     let config = load_config()?;
 
@@ -23,6 +30,7 @@ pub async fn start_web() -> ServerResult<()> {
     tracing_subscriber::fmt::fmt()
         .with_max_level(Level::INFO)
         .init();
+
     let state = state::initialize(&config).await?;
 
     let api_service = OpenApiService::new(
@@ -39,8 +47,9 @@ pub async fn start_web() -> ServerResult<()> {
     let app = Route::new()
         .nest("/api", api_service)
         .nest("/", ui)
-        .with(Tracing)
         .data(state);
+
+    let app = build_app(app, &config);
 
     Server::new(TcpListener::bind(config.server.get_addr()))
         .run(app)
