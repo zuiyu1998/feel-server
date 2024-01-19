@@ -1,12 +1,20 @@
 use crate::ServerResult;
 use radix_tree::{Node, Radix};
 use rc_entity::sea_orm::DatabaseConnection;
+use rc_storage::prelude::PermissionStorage;
 
 pub struct PermissionsManager(Node<char, String>);
 
 impl PermissionsManager {
-    pub async fn from_connection(_conn: &DatabaseConnection) -> ServerResult<Self> {
+    pub async fn from_connection(conn: &DatabaseConnection) -> ServerResult<Self> {
         let mut node = Node::new("", None);
+
+        let storage = PermissionStorage::new(conn);
+        let permissions = storage.get_all_url_permission().await?;
+
+        for permission in permissions.into_iter() {
+            node.insert(permission.url, permission.name);
+        }
 
         Ok(PermissionsManager(node))
     }

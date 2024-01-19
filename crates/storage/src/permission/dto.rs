@@ -1,6 +1,6 @@
 use rc_entity::chrono::NaiveDateTime;
 use rc_entity::prelude::{get_now, UrlPermissionActiveModel, UrlPermissionModel};
-use rc_entity::sea_orm::Set;
+use rc_entity::sea_orm::{self, FromQueryResult, Set};
 use std::collections::HashSet;
 
 #[derive(Debug, PartialEq, Eq, Hash)]
@@ -31,33 +31,14 @@ impl UrlPermissionForm {
     }
 }
 
+#[derive(Debug, FromQueryResult)]
 pub struct UrlPermission {
     pub id: i32,
     pub permission_id: i32,
     pub create_at: NaiveDateTime,
     pub update_at: NaiveDateTime,
     pub url: String,
-}
-
-impl From<UrlPermissionModel> for UrlPermission {
-    fn from(value: UrlPermissionModel) -> Self {
-        let UrlPermissionModel {
-            id,
-            permission_id,
-            create_at,
-            update_at,
-            url,
-            ..
-        } = value;
-
-        UrlPermission {
-            id,
-            permission_id,
-            create_at,
-            update_at,
-            url,
-        }
-    }
+    pub name: String,
 }
 
 impl PartialEq<&str> for Permission {

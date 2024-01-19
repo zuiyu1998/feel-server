@@ -2,12 +2,11 @@ mod dto;
 
 pub use dto::*;
 
-use rc_entity::prelude::{UrlPermissionColumn, UrlPermissionEntity};
-use rc_entity::sea_orm::{
-    ActiveModelTrait, ColumnTrait, ConnectionTrait, EntityTrait, QueryFilter,
-};
+use rc_entity::sea_orm::{ActiveModelTrait, ConnectionTrait, FromQueryResult, Statement};
 
-use crate::StorageResult;
+use rc_entity::prelude::UrlPermissionModel;
+
+use crate::{StorageResult, DATABASEBACKEND};
 
 pub struct PermissionStorage<'a, C> {
     conn: &'a C,
@@ -23,28 +22,38 @@ impl<'a, C: ConnectionTrait> PermissionStorage<'a, C> {
     }
 
     pub async fn get_all_url_permission(&self) -> StorageResult<Vec<UrlPermission>> {
-        let sql = UrlPermissionEntity::find()
-            .filter(UrlPermissionColumn::IsDelete.eq(false))
-            .filter(UrlPermissionColumn::IsEnable.eq(true));
+        let stmt = Statement::from_sql_and_values(
+            DATABASEBACKEND,
+            r#"
+            select
+            pup.id as id,
+            pup.permission_id = permission_id,
+            pup.url = url,
+            pup.create_at as create_at,
+            pup.update_at as update_at,
+            pp."name" as "name"
+            from pb_url_permission pup 
+            left join pb_permission pp  on pp.id = pup.permission_id  
+            where pup.is_delete = false and pup.is_enable = true
+        "#,
+            vec![],
+        );
 
-        let models = sql.all(self.conn).await?;
+        let data = UrlPermission::find_by_statement(stmt)
+            .all(self.conn)
+            .await?;
 
-        let result = models
-            .into_iter()
-            .map(|model| UrlPermission::from(model))
-            .collect::<Vec<UrlPermission>>();
-
-        Ok(result)
+        Ok(data)
     }
 
     pub async fn create_url_permission(
         &self,
         form: UrlPermissionForm,
-    ) -> StorageResult<UrlPermission> {
+    ) -> StorageResult<UrlPermissionModel> {
         let active = form.get_active_model();
 
         let model = active.insert(self.conn).await?;
 
-        Ok(UrlPermission::from(model))
+        Ok(model)
     }
 }
