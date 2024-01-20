@@ -4,6 +4,7 @@ mod error;
 mod user;
 
 mod article;
+mod club;
 mod commit;
 mod follow;
 mod label;
