@@ -16,6 +16,7 @@ mod m20240116_055748_create_role;
 mod m20240116_060328_create_user_role;
 mod m20240116_061300_create_role_permission;
 mod m20240118_144159_create_url_permission;
+mod m20240120_050858_create_club;
 
 pub struct Migrator;
 
@@ -39,6 +40,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20240116_060328_create_user_role::Migration),
             Box::new(m20240116_061300_create_role_permission::Migration),
             Box::new(m20240118_144159_create_url_permission::Migration),
+            Box::new(m20240120_050858_create_club::Migration),
         ]
     }
 }
