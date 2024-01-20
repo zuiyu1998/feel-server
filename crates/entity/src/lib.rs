@@ -1,6 +1,7 @@
 pub use sea_orm;
 
 mod article;
+mod club;
 mod commit;
 mod follow;
 mod label;
