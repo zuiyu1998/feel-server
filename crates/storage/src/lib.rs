@@ -12,6 +12,8 @@ mod permission;
 mod setting;
 mod trend;
 
+mod traits;
+
 mod utils;
 
 pub use error::*;
@@ -38,5 +40,6 @@ pub mod prelude {
 
     pub use crate::permission::*;
 
+    pub use crate::traits::*;
     pub use crate::utils::RelatedThrend;
 }
